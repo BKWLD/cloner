@@ -9,13 +9,6 @@ use Illuminate\Database\Capsule\Manager as DB;
 
 class ClonerTest extends PHPUnit_Framework_TestCase {
 
-	public function setUp() {
-		parent::setUp();
-		$this->setUpDatabase();
-		$this->migrateTables();
-		$this->seed();
-	}
-
 	// https://github.com/laracasts/TestDummy/blob/master/tests/FactoryTest.php#L18
 	protected function setUpDatabase() {
 		$db = new DB;
@@ -78,37 +71,56 @@ class ClonerTest extends PHPUnit_Framework_TestCase {
 		]));
 	}
 
-	// public function testExists() {
+	public function testExists() {
+		$this->setUpDatabase();
+		$this->migrateTables();
+		$this->seed();
 
-	// }
-
-	public function testDuplicate() {
 		$cloner = new Cloner;
 		$clone = $cloner->duplicate($this->article);
 
 		// Test that the new article was created
 		$this->assertTrue($clone->exists);
+		return $clone;
+	}
+
+	/**
+	 * @depends testExists
+	 */
+	public function testArticleProperties($clone) {
 		$this->assertEquals(2, $clone->id);
 		$this->assertEquals('Test', $clone->title);
+	}
 
-		// Test that new author relationship was formed
+	/**
+	 * @depends testExists
+	 */
+	public function testManyToMany($clone) {
 		$this->assertEquals(1, $clone->authors()->count());
 		$this->assertEquals('Steve', $clone->authors()->first()->name);
 		$this->assertEquals(2, DB::table('article_author')->count());
+	}
 
-		// Test that the duplicate photo was formed
+	/**
+	 * @depends testExists
+	 */
+	public function testOneToMany($clone) {
 		$this->assertEquals(1, $clone->photos()->count());
-		$photo = $clone->photos()->first();
+		return $clone->photos()->first();
+	}
 
-		// Test that the exempt rule worked
+	/**
+	 * @depends testOneToMany
+	 */
+	public function testExemptions($photo) {
 		$this->assertNull($photo->source);
+	}
 
-		// Test that onCloning worked
+	/**
+	 * @depends testOneToMany
+	 */
+	public function testCallbacks($photo) {
 		$this->assertNotEquals(1, $photo->uid);
-		
-		// $this->assertNotEquals('/test.jpg', $clone->photos()->first()->image);
-
-
 	}
 
 }
