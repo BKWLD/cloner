@@ -1,14 +1,32 @@
 {
-    "name": "bkwld/cloner",
-    "description": "A trait for Laravel Eloquent models that allows for recursive (via relationships) cloning of a model, including files (via BKWLD/upchuck)",
-    "require-dev": {
-        "illuminate/database": "^4.0"
-    },
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Robert Reinhard",
-            "email": "info@bkwld.com"
-        }
-    ]
+	"name": "bkwld/cloner",
+	"description": "A trait for Laravel Eloquent models that allows for recursive (via relationships) cloning of a model, including files (via BKWLD/upchuck)",
+	"require": {
+		"php": ">=5.4.0",
+		"illuminate/support": "~4.0"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "~4.7",
+		"illuminate/database": "~4.0"
+	},
+	"suggest": {
+		"bkwld/upchuck": "Required for replicating of files."
+	},
+	"autoload": {
+		"psr-4": {
+			"Bkwld\\Cloner\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Bkwld\\Cloner\\Stubs\\": "stubs/"
+		}
+	},
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Robert Reinhard",
+			"email": "info@bkwld.com"
+		}
+	]
 }
