@@ -28,17 +28,11 @@ class Cloner {
 	 * @param  Illuminate\Database\Eloquent\Relations\Relation $relation
 	 * @return Illuminate\Database\Eloquent\Model The new model instance
 	 */
-	public function duplicate($model, $relation = null) {
+	public function duplicate($model, $relation = null) {		
 
 		// Duplicate the model
 		$clone = $model->replicate($model->getCloneExemptAttributes());
-
-		// Save the model.  If a relation was passed, save the clone onto that
-		// relation.  Otherwise, just save it.
-		$clone->onCloning();
-		if ($relation) $relation->save($clone);
-		else $clone->save();
-		$clone->onCloned();
+		$this->saveClone($clone, $relation);
 
 		// Loop though all of it's cloneable relationshsips and duplicate the 
 		// relationship
@@ -52,6 +46,21 @@ class Cloner {
 	}
 
 	/**
+	 * Save the clone. If a relation was passed, save the clone onto that
+	 * relation.  Otherwise, just save it.
+	 *
+	 * @param  Illuminate\Database\Eloquent\Model $clone
+	 * @param  Illuminate\Database\Eloquent\Relations\Relation $relation
+	 * @return void
+	 */
+	protected function saveClone($clone, $relation = null) {
+		$clone->onCloning();
+		if ($relation) $relation->save($clone);
+		else $clone->save();
+		$clone->onCloned();
+	}
+
+	/**
 	 * Duplicate relationships to the clone
 	 *
 	 * @param  Illuminate\Database\Eloquent\Model $model
@@ -59,7 +68,7 @@ class Cloner {
 	 * @param  Illuminate\Database\Eloquent\Model $clone
 	 * @return void
 	 */
-	public function duplicateRelation($model, $relation_name, $clone) {
+	protected function duplicateRelation($model, $relation_name, $clone) {
 		$relation = call_user_func([$model, $relation_name]);
 		if (is_a($relation, 'Illuminate\Database\Eloquent\Relations\BelongsToMany')) {
 			$this->duplicatePivotedRelation($relation, $relation_name, $clone);
@@ -75,7 +84,7 @@ class Cloner {
 	 * @param  Illuminate\Database\Eloquent\Model $clone
 	 * @return void
 	 */
-	public function duplicatePivotedRelation($relation, $relation_name, $clone) {
+	protected function duplicatePivotedRelation($relation, $relation_name, $clone) {
 		$relation->get()->each(function($foreign) use ($clone, $relation_name) {
 			$clone->$relation_name()->attach($foreign);
 		});
@@ -90,7 +99,7 @@ class Cloner {
 	 * @param  Illuminate\Database\Eloquent\Model $clone
 	 * @return void
 	 */
-	public function duplicateDirectRelation($relation, $relation_name, $clone) {
+	protected function duplicateDirectRelation($relation, $relation_name, $clone) {
 		$relation->get()->each(function($foreign) use ($clone, $relation_name) {
 			$this->duplicate($foreign, $clone->$relation_name());
 		});
