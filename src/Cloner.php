@@ -32,6 +32,9 @@ class Cloner {
 
 		// Duplicate the model
 		$clone = $model->replicate($model->getCloneExemptAttributes());
+
+		// Save the model.  If a relation was passed, save the clone onto that
+		// relation.  Otherwise, just save it.
 		$clone->onCloning();
 		if ($relation) $relation->save($clone);
 		else $clone->save();

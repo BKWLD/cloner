@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 class Article extends Model {
 	use Cloneable;
 
-	public $clone_except_attributes;
+	public $clone_exempt_attributes;
 	public $cloneable_relations = ['photos', 'authors'];
 
 	public function photos() {

@@ -52,7 +52,9 @@ class ClonerTest extends PHPUnit_Framework_TestCase {
 		DB::schema()->create('photos', function ($table) {
 			$table->increments('id');
 			$table->integer('article_id')->unsigned();
+			$table->string('uid');
 			$table->string('image');
+			$table->boolean('source')->nullable();
 			$table->timestamps();
 		});
 	}
@@ -70,9 +72,15 @@ class ClonerTest extends PHPUnit_Framework_TestCase {
 
 		Photo::unguard();
 		$this->article->photos()->save(new Photo([
+			'uid' => 1,
 			'image' => '/test.jpg',
+			'source' => true,
 		]));
 	}
+
+	// public function testExists() {
+
+	// }
 
 	public function testDuplicate() {
 		$cloner = new Cloner;
@@ -90,6 +98,14 @@ class ClonerTest extends PHPUnit_Framework_TestCase {
 
 		// Test that the duplicate photo was formed
 		$this->assertEquals(1, $clone->photos()->count());
+		$photo = $clone->photos()->first();
+
+		// Test that the exempt rule worked
+		$this->assertNull($photo->source);
+
+		// Test that onCloning worked
+		$this->assertNotEquals(1, $photo->uid);
+		
 		// $this->assertNotEquals('/test.jpg', $clone->photos()->first()->image);
 
 

@@ -8,8 +8,17 @@ trait Cloneable {
 	 * @return array
 	 */
 	public function getCloneExemptAttributes() {
-		if (!isset($this->clone_except_attributes)) return [];
-		return $this->clone_except_attributes;
+
+		// Alwyas make the id and timestamps exempt
+		$defaults = [
+			$this->getKeyName(),
+			$this->getCreatedAtColumn(),
+			$this->getUpdatedAtColumn(),
+		];
+
+		// It none specified, just return the defaults, else, merge them
+		if (!isset($this->clone_exempt_attributes)) return $defaults;
+		return array_merge($defaults, $this->clone_exempt_attributes);
 	}
 
 	/**
