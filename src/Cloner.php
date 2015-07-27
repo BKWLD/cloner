@@ -29,19 +29,36 @@ class Cloner {
 	 * @return Illuminate\Database\Eloquent\Model The new model instance
 	 */
 	public function duplicate($model, $relation = null) {		
-
-		// Duplicate the model
-		$clone = $model->replicate($model->getCloneExemptAttributes());
+		$clone = $this->cloneModel($model);
+		$this->duplicateAttachments($model);
 		$this->saveClone($clone, $relation);
-
-		// Loop though all of it's cloneable relationshsips and duplicate the 
-		// relationship
-		foreach($model->getCloneableRelations() as $relation_name) {
-			$this->duplicateRelation($model, $relation_name, $clone);
-		}
-		
-		// Return the duplicated model
+		$this->cloneRelations($model, $clone);
 		return $clone;
+	}
+
+	/**
+	 * Create duplicate of the model
+	 *
+	 * @param  Illuminate\Database\Eloquent\Model $model
+	 * @return Illuminate\Database\Eloquent\Model The new model instance
+	 */
+	protected function cloneModel($model) {
+		$exempt = method_exists($model, 'getCloneExemptAttributes') ? 
+			$model->getCloneExemptAttributes() : null;
+		return $model->replicate($exempt);
+	}
+
+	/**
+	 * Duplicate all attachments, given them a new name, and update the attribute
+	 * value
+	 *
+	 * @param  Illuminate\Database\Eloquent\Model $clone
+	 * @return void 
+	 */
+	protected function duplicateAttachments($clone) {
+
+		// If no attachment adapter, stop
+		if (!$this->attachment_adapter) return;
 
 	}
 
@@ -54,10 +71,24 @@ class Cloner {
 	 * @return void
 	 */
 	protected function saveClone($clone, $relation = null) {
-		$clone->onCloning();
+		if (method_exists($clone, 'onCloning')) $clone->onCloning();
 		if ($relation) $relation->save($clone);
 		else $clone->save();
-		$clone->onCloned();
+		if (method_exists($clone, 'onCloned')) $clone->onCloned();
+	}
+
+	/**
+	 * Loop through relations and clone or re-attach them
+	 *
+	 * @param  Illuminate\Database\Eloquent\Model $model
+	 * @param  Illuminate\Database\Eloquent\Model $clone
+	 * @return void
+	 */
+	protected function cloneRelations($model, $clone) {
+		if (!method_exists($model, 'getCloneableRelations')) return;
+		foreach($model->getCloneableRelations() as $relation_name) {
+			$this->duplicateRelation($model, $relation_name, $clone);
+		}
 	}
 
 	/**
