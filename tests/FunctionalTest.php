@@ -2,12 +2,47 @@
 
 // Deps
 use Bkwld\Cloner\Cloner;
+use Bkwld\Cloner\Adapters\Upchuck;
 use Bkwld\Cloner\Stubs\Article;
 use Bkwld\Cloner\Stubs\Author;
 use Bkwld\Cloner\Stubs\Photo;
+use Bkwld\Upchuck\Helpers;
+use Bkwld\Upchuck\Storage;
 use Illuminate\Database\Capsule\Manager as DB;
+use League\Flysystem\Filesystem;
+use League\Flysystem\Vfs\VfsAdapter as Adapter;
+use League\Flysystem\MountManager;
+use VirtualFileSystem\FileSystem as Vfs;
 
 class FunctionalTest extends PHPUnit_Framework_TestCase {
+
+	protected function initUpchuck() {
+
+		// Setup filesystem
+		$fs = new Vfs;
+		$this->fs_path = $fs->path('/');
+		$this->disk = new Filesystem(new Adapter($fs));
+
+		// Create upchuck adapter instance
+
+		$this->helpers = new Helpers([
+			'url_prefix' => '/uploads/'
+		]);
+
+		$manager = new MountManager([
+			'tmp' => $this->disk,
+			'disk' => $this->disk,
+		]);
+
+		$storage = new Storage($manager, $this->helpers);
+
+		$this->upchuck = new Upchuck(
+			$this->helpers,
+			$storage,
+			$this->disk
+		);
+
+	}
 
 	// https://github.com/laracasts/TestDummy/blob/master/tests/FactoryTest.php#L18
 	protected function setUpDatabase() {
@@ -63,66 +98,51 @@ class FunctionalTest extends PHPUnit_Framework_TestCase {
 			'name' => 'Steve',
 		]));
 
+		$this->disk->write('test.jpg', 'contents');
+
 		Photo::unguard();
 		$this->article->photos()->save(new Photo([
 			'uid' => 1,
-			'image' => '/test.jpg',
+			'image' => '/uploads/test.jpg',
 			'source' => true,
 		]));
 	}
 
 	public function testExists() {
+		$this->initUpchuck();
 		$this->setUpDatabase();
 		$this->migrateTables();
 		$this->seed();
 
-		$cloner = new Cloner();
+		$cloner = new Cloner($this->upchuck);
 		$clone = $cloner->duplicate($this->article);
 
 		// Test that the new article was created
 		$this->assertTrue($clone->exists);
-		return $clone;
-	}
-
-	/**
-	 * @depends testExists
-	 */
-	public function testArticleProperties($clone) {
 		$this->assertEquals(2, $clone->id);
 		$this->assertEquals('Test', $clone->title);
-	}
 
-	/**
-	 * @depends testExists
-	 */
-	public function testManyToMany($clone) {
+		// Test mamny to many
 		$this->assertEquals(1, $clone->authors()->count());
 		$this->assertEquals('Steve', $clone->authors()->first()->name);
 		$this->assertEquals(2, DB::table('article_author')->count());
-	}
 
-	/**
-	 * @depends testExists
-	 */
-	public function testOneToMany($clone) {
+		// Test one to many
 		$this->assertEquals(1, $clone->photos()->count());
-		return $clone->photos()->first();
-	}
+		$photo = $clone->photos()->first();
 
-	/**
-	 * @depends testOneToMany
-	 */
-	public function testExemptions($photo) {
+		// Test excemptions
 		$this->assertNull($photo->source);
-	}
 
-	/**
-	 * @depends testOneToMany
-	 */
-	public function testCallbacks($photo) {
+		// Test callbacks
 		$this->assertNotEquals(1, $photo->uid);
+
+		// Test the file was created in a different place
+		$this->assertNotEquals('/uploads/test.jpg', $photo->image);
+
+		// Test that the file is the same
+		$path = $this->helpers->path($photo->image);
+		$this->assertTrue($this->disk->has($path));
+		$this->assertEquals('contents', $this->disk->read($path));
 	}
-
-
-
 }
