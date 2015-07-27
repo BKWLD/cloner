@@ -9,16 +9,15 @@ class Cloner {
 	/**
 	 * @var AttachmentAdapter
 	 */
-	private $attachment_adapter;
+	private $attachment;
 
 	/**
 	 * DI
 	 * 
-	 * @param AttachmentAdapter $attachment_adapter
+	 * @param AttachmentAdapter $attachment
 	 */
-	public function __construct(
-		AttachmentAdapter $attachment_adapter = null) {
-		$this->attachment_adapter = $attachment_adapter;
+	public function __construct(AttachmentAdapter $attachment = null) {
+		$this->attachment = $attachment;
 	}
 
 	/**
@@ -30,7 +29,7 @@ class Cloner {
 	 */
 	public function duplicate($model, $relation = null) {		
 		$clone = $this->cloneModel($model);
-		$this->duplicateAttachments($model);
+		$this->duplicateAttachments($clone);
 		$this->saveClone($clone, $relation);
 		$this->cloneRelations($model, $clone);
 		return $clone;
@@ -56,10 +55,11 @@ class Cloner {
 	 * @return void 
 	 */
 	protected function duplicateAttachments($clone) {
-
-		// If no attachment adapter, stop
-		if (!$this->attachment_adapter) return;
-
+		if (!$this->attachment || !method_exists($clone, 'getCloneableFileAttributes')) return;
+		foreach($clone->getCloneableFileAttributes() as $attribute) {
+			if (!$original = $clone->getAttribute($attribute)) continue;
+			$clone->setAttribute($attribute, $this->attachment->duplicate($original));
+		}
 	}
 
 	/**

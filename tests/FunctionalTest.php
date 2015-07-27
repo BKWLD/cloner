@@ -7,7 +7,7 @@ use Bkwld\Cloner\Stubs\Author;
 use Bkwld\Cloner\Stubs\Photo;
 use Illuminate\Database\Capsule\Manager as DB;
 
-class ClonerTest extends PHPUnit_Framework_TestCase {
+class FunctionalTest extends PHPUnit_Framework_TestCase {
 
 	// https://github.com/laracasts/TestDummy/blob/master/tests/FactoryTest.php#L18
 	protected function setUpDatabase() {
@@ -76,7 +76,7 @@ class ClonerTest extends PHPUnit_Framework_TestCase {
 		$this->migrateTables();
 		$this->seed();
 
-		$cloner = new Cloner;
+		$cloner = new Cloner();
 		$clone = $cloner->duplicate($this->article);
 
 		// Test that the new article was created
@@ -122,5 +122,7 @@ class ClonerTest extends PHPUnit_Framework_TestCase {
 	public function testCallbacks($photo) {
 		$this->assertNotEquals(1, $photo->uid);
 	}
+
+
 
 }
