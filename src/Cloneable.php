@@ -1,5 +1,11 @@
 <?php namespace Bkwld\Cloner;
 
+// Deps
+use App;
+
+/**
+ * Mixin accessor methods, callbacks, and the duplicate() helper into models.
+ */
 trait Cloneable {
 
 	/**
@@ -40,6 +46,15 @@ trait Cloneable {
 	public function getCloneableRelations() {
 		if (!isset($this->cloneable_relations)) return [];
 		return $this->cloneable_relations;
+	}
+
+	/**
+	 * Clone the current model instance
+	 *
+	 * @return Illuminate\Database\Eloquent\Model The new, saved clone
+	 */
+	public function duplicate() {
+		return App::make('cloner')->duplicate($this);
 	}
 
 	/**
