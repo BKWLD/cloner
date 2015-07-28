@@ -1,6 +1,6 @@
 # Cloner
 
-[![Packagist](https://img.shields.io/packagist/v/bkwld/cloner.svg)](https://packagist.org/packages/bkwld/cloner) [![Build Status](https://travis-ci.org/BKWLD/cloner.svg?branch=master)](https://travis-ci.org/BKWLD/cloner) [![Test Coverage](https://codeclimate.com/repos/55b7b9dce30ba04482018fb3/badges/090016ac86c5ff0cc016/coverage.svg)](https://codeclimate.com/repos/55b7b9dce30ba04482018fb3/coverage) [![Code Climate](https://codeclimate.com/repos/55b7b9dce30ba04482018fb3/badges/090016ac86c5ff0cc016/gpa.svg)](https://codeclimate.com/repos/55b7b9dce30ba04482018fb3/feed)
+[![Packagist](https://img.shields.io/packagist/v/BKWLD/cloner.svg)](https://packagist.org/packages/bkwld/cloner) [![Build Status](https://travis-ci.org/BKWLD/cloner.svg?branch=master)](https://travis-ci.org/BKWLD/cloner) [![Test Coverage](https://codeclimate.com/repos/55b7b9dce30ba04482018fb3/badges/090016ac86c5ff0cc016/coverage.svg)](https://codeclimate.com/repos/55b7b9dce30ba04482018fb3/coverage) [![Code Climate](https://codeclimate.com/repos/55b7b9dce30ba04482018fb3/badges/090016ac86c5ff0cc016/gpa.svg)](https://codeclimate.com/repos/55b7b9dce30ba04482018fb3/feed)
 
 A trait for Laravel Eloquent models that lets you clone of a model and it's relationships, including files.
 
