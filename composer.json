@@ -10,7 +10,8 @@
 		"bkwld/upchuck": "~1.1",
 		"illuminate/database": "~4.0",
 		"league/flysystem-vfs": "^1.0",
-		"mockery/mockery": "^0.9.4"
+		"mockery/mockery": "^0.9.4",
+		"codeclimate/php-test-reporter": "dev-master"
 	},
 	"suggest": {
 		"bkwld/upchuck": "Required for replicating of files."
