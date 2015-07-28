@@ -108,7 +108,7 @@ class FunctionalTest extends PHPUnit_Framework_TestCase {
 		]));
 	}
 
-	public function testExists() {
+	function testExists() {
 		$this->initUpchuck();
 		$this->setUpDatabase();
 		$this->migrateTables();

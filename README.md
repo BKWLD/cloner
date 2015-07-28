@@ -95,4 +95,10 @@ class Photo extends Eloquent {
 
 The `$cloneable_file_attributes` property is used by the `Cloneable` trait to identify which columns contain files.  Their values are passed to the attachment adapter, which is responsible for duplicating the files and returning the path to the new file.  
 
-If you don't use [Bkwld\Upchuck](https://github.com/BKWLD/upchuck) you can write your own implementation of the `Bkwld\Cloner\AttachmentAdapter` trait, make a Laravel IoC container for it, and then publish and edit the `Cloner` config file, referencing your implementation.
+If you don't use [Bkwld\Upchuck](https://github.com/BKWLD/upchuck) you can write your own implementation of the `Bkwld\Cloner\AttachmentAdapter` trait and wrap it in a Laravel IoC container named 'cloner.attachment-adapter'.  For instance, put this in your `app/start/global.php`:
+
+```php
+App::singleton('cloner.attachment-adapter', function($app) { 
+	return new CustomAttachmentAdapter; 
+});
+```
