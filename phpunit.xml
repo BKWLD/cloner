@@ -24,8 +24,8 @@
         <listener class="\Mockery\Adapter\Phpunit\TestListener"></listener>
     </listeners>
     <logging>
-        <!-- For output in CLI -->
         <log type="coverage-text" target="php://stdout" showUncoveredFiles="true"/>
+        <log type="coverage-html" target="coverage" showUncoveredFiles="true"/>
         <!-- For Code Climate -->
         <log type="coverage-clover" target="build/logs/clover.xml"/>
     </logging>
