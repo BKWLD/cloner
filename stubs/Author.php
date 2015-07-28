@@ -1,8 +1,8 @@
 <?php namespace Bkwld\Cloner\Stubs;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model as Eloquent;
 
-class Author extends Model {
+class Author extends Eloquent {
 
 	public function articles() {
 		return $this->belongsToMany('Bkwld\Cloner\Stubs\Article');

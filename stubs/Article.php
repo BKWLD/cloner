@@ -1,12 +1,11 @@
 <?php namespace Bkwld\Cloner\Stubs;
 
 use Bkwld\Cloner\Cloneable as Cloneable;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model as Eloquent;
 
-class Article extends Model {
+class Article extends Eloquent {
 	use Cloneable;
 
-	public $clone_exempt_attributes;
 	public $cloneable_relations = ['photos', 'authors'];
 
 	public function photos() {

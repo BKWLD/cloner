@@ -1,9 +1,9 @@
 <?php namespace Bkwld\Cloner\Stubs;
 
 use Bkwld\Cloner\Cloneable as Cloneable;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model as Eloquent;
 
-class Photo extends Model {
+class Photo extends Eloquent {
 	use Cloneable;
 
 	private $clone_exempt_attributes = ['uid', 'source'];

@@ -1,3 +1,8 @@
+/**
+ * Auto-reun tests in development
+ */
+
+// Setup
 var gulp = require('gulp')
 	, phpunit = require('gulp-phpunit')
 ;
