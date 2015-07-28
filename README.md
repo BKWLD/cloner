@@ -1,5 +1,7 @@
 # Cloner
 
+[![Test Coverage](https://codeclimate.com/repos/55b7b9dce30ba04482018fb3/badges/090016ac86c5ff0cc016/coverage.svg)](https://codeclimate.com/repos/55b7b9dce30ba04482018fb3/coverage)[![Code Climate](https://codeclimate.com/repos/55b7b9dce30ba04482018fb3/badges/090016ac86c5ff0cc016/gpa.svg)](https://codeclimate.com/repos/55b7b9dce30ba04482018fb3/feed)
+
 A trait for Laravel Eloquent models that lets you clone of a model and it's relationships, including files.
 
 
