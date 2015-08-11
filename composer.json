@@ -3,12 +3,12 @@
 	"description": "A trait for Laravel Eloquent models that lets you clone of a model and it's relationships, including files.",
 	"require": {
 		"php": ">=5.4.0",
-		"illuminate/support": "~4.0"
+		"illuminate/support": "4 - 5"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "~4.7",
 		"bkwld/upchuck": "~1.1",
-		"illuminate/database": "~4.0",
+		"illuminate/database": "4 - 5",
 		"league/flysystem-vfs": "^1.0",
 		"mockery/mockery": "^0.9.4",
 		"codeclimate/php-test-reporter": "dev-master"
