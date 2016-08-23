@@ -37,7 +37,7 @@ class FunctionalTest extends PHPUnit_Framework_TestCase {
 
 		$storage = new Storage($manager, $this->helpers);
 
-		$this->upchuck = new Upchuck(
+		$this->upchuck_adapter = new Upchuck(
 			$this->helpers,
 			$storage,
 			$this->disk
@@ -124,7 +124,7 @@ class FunctionalTest extends PHPUnit_Framework_TestCase {
 		$this->migrateTables();
 		$this->seed();
 
-		$cloner = new Cloner($this->upchuck, $this->mockEvents());
+		$cloner = new Cloner($this->upchuck_adapter, $this->mockEvents());
 		$clone = $cloner->duplicate($this->article);
 
 		// Test that the new article was created
@@ -160,19 +160,23 @@ class FunctionalTest extends PHPUnit_Framework_TestCase {
 	// use eloquent because Laravel has issues with relationships on models in
 	// a different connection
 	// https://github.com/laravel/framework/issues/9355
-	function testExistsInAltDatabase() {
+	function testExistsInAltDatabaseAndFilesystem() {
 		$this->initUpchuck();
 		$this->setUpDatabase();
 		$this->migrateTables();
 		$this->migrateTables('alt');
 		$this->seed();
 
+		// ADd the remote disk to upchuck adapter
+		$this->remoteDisk = new Filesystem(new Adapter(new Vfs));
+		$this->upchuck_adapter->setDestination($this->remoteDisk);
+
 		// Make sure that the alt databse is empty
 		$this->assertEquals(0, DB::connection('alt')->table('articles')->count());
 		$this->assertEquals(0, DB::connection('alt')->table('authors')->count());
 		$this->assertEquals(0, DB::connection('alt')->table('photos')->count());
 
-		$cloner = new Cloner($this->upchuck, $this->mockEvents());
+		$cloner = new Cloner($this->upchuck_adapter, $this->mockEvents());
 		$clone = $cloner->duplicateTo($this->article, 'alt');
 
 		// Test that the new article was created
@@ -197,12 +201,11 @@ class FunctionalTest extends PHPUnit_Framework_TestCase {
 		// Test callbacks
 		$this->assertNotEquals(1, $photo->uid);
 
-		// Test the file was created in a different place
-		$this->assertNotEquals('/uploads/test.jpg', $photo->image);
+		// Test the file was created on the remote disk
+		$path = $this->helpers->path($photo->image);
+		$this->assertTrue($this->remoteDisk->has($path));
 
 		// Test that the file is the same
-		$path = $this->helpers->path($photo->image);
-		$this->assertTrue($this->disk->has($path));
-		$this->assertEquals('contents', $this->disk->read($path));
+		$this->assertEquals('contents', $this->remoteDisk->read($path));
 	}
 }
