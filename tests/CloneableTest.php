@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 // Deps
 use Bkwld\Cloner\Stubs\Article;

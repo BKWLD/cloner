@@ -13,7 +13,7 @@ class Cloner {
 
 	/**
 	 * DI
-	 * 
+	 *
 	 * @param AttachmentAdapter $attachment
 	 */
 	public function __construct(AttachmentAdapter $attachment = null) {
@@ -22,12 +22,12 @@ class Cloner {
 
 	/**
 	 * Clone a model instance and all of it's files and relations
-	 * 
+	 *
 	 * @param  Illuminate\Database\Eloquent\Model $model
 	 * @param  Illuminate\Database\Eloquent\Relations\Relation $relation
 	 * @return Illuminate\Database\Eloquent\Model The new model instance
 	 */
-	public function duplicate($model, $relation = null) {		
+	public function duplicate($model, $relation = null) {
 		$clone = $this->cloneModel($model);
 		$this->duplicateAttachments($clone);
 		$this->saveClone($clone, $relation);
@@ -42,7 +42,7 @@ class Cloner {
 	 * @return Illuminate\Database\Eloquent\Model The new model instance
 	 */
 	protected function cloneModel($model) {
-		$exempt = method_exists($model, 'getCloneExemptAttributes') ? 
+		$exempt = method_exists($model, 'getCloneExemptAttributes') ?
 			$model->getCloneExemptAttributes() : null;
 		return $model->replicate($exempt);
 	}
@@ -52,7 +52,7 @@ class Cloner {
 	 * value
 	 *
 	 * @param  Illuminate\Database\Eloquent\Model $clone
-	 * @return void 
+	 * @return void
 	 */
 	protected function duplicateAttachments($clone) {
 		if (!$this->attachment || !method_exists($clone, 'getCloneableFileAttributes')) return;

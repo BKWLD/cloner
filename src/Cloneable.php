@@ -10,7 +10,7 @@ trait Cloneable {
 
 	/**
 	 * Return the list of attributes on this model that should be cloned
-	 * 
+	 *
 	 * @return  array
 	 */
 	public function getCloneExemptAttributes() {
@@ -31,7 +31,7 @@ trait Cloneable {
 	 * Return a list of attributes that reference files that should be duplicated
 	 * when the model is cloned
 	 *
-	 * @return  array 
+	 * @return  array
 	 */
 	public function getCloneableFileAttributes() {
 		if (!isset($this->cloneable_file_attributes)) return [];
@@ -41,7 +41,7 @@ trait Cloneable {
 	/**
 	 * Return the list of relations on this model that should be cloned
 	 *
-	 * @return  array 
+	 * @return  array
 	 */
 	public function getCloneableRelations() {
 		if (!isset($this->cloneable_relations)) return [];
@@ -60,7 +60,7 @@ trait Cloneable {
 	/**
 	 * A no-op callback that gets fired when a model is cloning but before it gets
 	 * committed to the database
-	 * 
+	 *
 	 * @return  void
 	 */
 	public function onCloning() {}
@@ -68,7 +68,7 @@ trait Cloneable {
 	/**
 	 * A no-op callback that gets fired when a model is cloned and saved to the
 	 * database
-	 * 
+	 *
 	 * @return  void
 	 */
 	public function onCloned() {}

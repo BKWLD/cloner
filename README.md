@@ -100,7 +100,7 @@ The `$cloneable_file_attributes` property is used by the `Cloneable` trait to id
 If you don't use [Bkwld\Upchuck](https://github.com/BKWLD/upchuck) you can write your own implementation of the `Bkwld\Cloner\AttachmentAdapter` trait and wrap it in a Laravel IoC container named 'cloner.attachment-adapter'.  For instance, put this in your `app/start/global.php`:
 
 ```php
-App::singleton('cloner.attachment-adapter', function($app) { 
-	return new CustomAttachmentAdapter; 
+App::singleton('cloner.attachment-adapter', function($app) {
+	return new CustomAttachmentAdapter;
 });
 ```
