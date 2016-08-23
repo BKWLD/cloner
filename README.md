@@ -76,8 +76,9 @@ class Photo extends Eloquent {
 		return $this->belongsTo('Article');
 	}
 
-	public function onCloning() {
+	public function onCloning($src) {
 		$this->uid = str_random();
+		echo 'The original key is: '.$src->getKey();
 	}
 }
 ```

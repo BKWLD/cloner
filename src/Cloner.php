@@ -35,7 +35,7 @@ class Cloner {
 	public function duplicate($model, $relation = null) {
 		$clone = $this->cloneModel($model);
 		$this->duplicateAttachments($clone);
-		$this->saveClone($clone, $relation);
+		$this->saveClone($clone, $relation, $model);
 		$this->cloneRelations($model, $clone);
 		return $clone;
 	}
@@ -89,13 +89,14 @@ class Cloner {
 	 *
 	 * @param  Illuminate\Database\Eloquent\Model $clone
 	 * @param  Illuminate\Database\Eloquent\Relations\Relation $relation
+	 * @param  Illuminate\Database\Eloquent\Model $src The orginal model
 	 * @return void
 	 */
-	protected function saveClone($clone, $relation = null) {
-		if (method_exists($clone, 'onCloning')) $clone->onCloning();
+	protected function saveClone($clone, $relation = null, $src) {
+		if (method_exists($clone, 'onCloning')) $clone->onCloning($src);
 		if ($relation) $relation->save($clone);
 		else $clone->save();
-		if (method_exists($clone, 'onCloned')) $clone->onCloned();
+		if (method_exists($clone, 'onCloned')) $clone->onCloned($src);
 	}
 
 	/**
