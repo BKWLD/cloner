@@ -2,7 +2,7 @@
 
 [![Packagist](https://img.shields.io/packagist/v/BKWLD/cloner.svg)](https://packagist.org/packages/bkwld/cloner) [![Build Status](https://travis-ci.org/BKWLD/cloner.svg?branch=master)](https://travis-ci.org/BKWLD/cloner) [![Test Coverage](https://codeclimate.com/repos/55b7b9dce30ba04482018fb3/badges/090016ac86c5ff0cc016/coverage.svg)](https://codeclimate.com/repos/55b7b9dce30ba04482018fb3/coverage) [![Code Climate](https://codeclimate.com/repos/55b7b9dce30ba04482018fb3/badges/090016ac86c5ff0cc016/gpa.svg)](https://codeclimate.com/repos/55b7b9dce30ba04482018fb3/feed)
 
-A trait for Laravel Eloquent models that lets you clone a model and it's relationships, including files.
+A trait for Laravel Eloquent models that lets you clone a model and it's relationships, including files. Even to another database.
 
 
 ## Installation
@@ -28,7 +28,13 @@ You can clone an Article model like so:
 $clone = Article::first()->duplicate();
 ```
 
-In this example, `$clone` is a new `Article` that has been saved to the database.
+In this example, `$clone` is a new `Article` that has been saved to the database.  To clone to a different database:
+
+```php
+$clone = Article::first()->duplicateTo('production');
+```
+
+Where `production` is the [connection name](https://laravel.com/docs/5.2/database#accessing-connections) of a different Laravel database connection.
 
 
 #### Cloning relationships
@@ -52,6 +58,8 @@ class Article extends Eloquent {
 ```
 
 The `$cloneable_relations` informs the `Cloneable` as to which relations it should follow when cloning.  Now when you call `Article::first()->duplicate()`, all of the `Photo` rows of the original will be copied and associated with the new `Article`.  And new pivot rows will be created associating the new `Article` with the `Authors` of the original (because it is a many to many relationship, no new `Author` rows are created).  Furthermore, if the `Photo` model has many of some other model, you can specify `$cloneable_relations` in its class and `Cloner` will continue replicating them as well.
+
+*Note:* Many to many relationships will not be cloned to a _different_ database because the related instance may not exist in the other database or could have a different primary key.
 
 
 ### Customizing the cloned attributes

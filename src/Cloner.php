@@ -12,6 +12,11 @@ class Cloner {
 	private $attachment;
 
 	/**
+	 * @var string
+	 */
+	private $write_connection;
+
+	/**
 	 * DI
 	 *
 	 * @param AttachmentAdapter $attachment
@@ -36,6 +41,20 @@ class Cloner {
 	}
 
 	/**
+	 * Clone a model instance to a specific database connection
+	 *
+	 * @param  Illuminate\Database\Eloquent\Model $model
+	 * @param  string $connection A Laravel database connection
+	 * @return Illuminate\Database\Eloquent\Model The new model instance
+	 */
+	public function duplicateTo($model, $connection) {
+		$this->write_connection = $connection; // Store the write database connection
+		$clone = $this->duplicate($model); // Do a normal duplicate
+		$this->write_connection = null; // Null out the connection for next run
+		return $clone;
+	}
+
+	/**
 	 * Create duplicate of the model
 	 *
 	 * @param  Illuminate\Database\Eloquent\Model $model
@@ -44,7 +63,9 @@ class Cloner {
 	protected function cloneModel($model) {
 		$exempt = method_exists($model, 'getCloneExemptAttributes') ?
 			$model->getCloneExemptAttributes() : null;
-		return $model->replicate($exempt);
+		$clone = $model->replicate($exempt);
+		if ($this->write_connection) $clone->setConnection($this->write_connection);
+		return $clone;
 	}
 
 	/**
@@ -116,6 +137,13 @@ class Cloner {
 	 * @return void
 	 */
 	protected function duplicatePivotedRelation($relation, $relation_name, $clone) {
+
+		// If duplicating between databases, do not duplicate relations. The related
+		// instance may not exist in the other database or could have a different
+		// primary key.
+		if ($this->write_connection) return;
+
+		// Loop trough current relations and attach to clone
 		$relation->get()->each(function($foreign) use ($clone, $relation_name) {
 			$clone->$relation_name()->attach($foreign);
 		});

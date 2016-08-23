@@ -51,33 +51,38 @@ class FunctionalTest extends PHPUnit_Framework_TestCase {
 		$db->addConnection([
 				'driver' => 'sqlite',
 				'database' => ':memory:'
-		]);
+		], 'default');
+
+		$db->addConnection([
+				'driver' => 'sqlite',
+				'database' => ':memory:'
+		], 'alt');
 
 		$db->bootEloquent();
 		$db->setAsGlobal();
 	}
 
 	// https://github.com/laracasts/TestDummy/blob/master/tests/FactoryTest.php#L31
-	protected function migrateTables() {
-		DB::schema()->create('articles', function ($table) {
+	protected function migrateTables($connection = 'default') {
+		DB::connection($connection)->getSchemaBuilder()->create('articles', function ($table) {
 			$table->increments('id');
 			$table->string('title');
 			$table->timestamps();
 		});
 
-		DB::schema()->create('authors', function ($table) {
+		DB::connection($connection)->getSchemaBuilder()->create('authors', function ($table) {
 			$table->increments('id');
 			$table->string('name');
 			$table->timestamps();
 		});
 
-		DB::schema()->create('article_author', function ($table) {
+		DB::connection($connection)->getSchemaBuilder()->create('article_author', function ($table) {
 			$table->increments('id');
 			$table->integer('article_id')->unsigned();
 			$table->integer('author_id')->unsigned();
 		});
 
-		DB::schema()->create('photos', function ($table) {
+		DB::connection($connection)->getSchemaBuilder()->create('photos', function ($table) {
 			$table->increments('id');
 			$table->integer('article_id')->unsigned();
 			$table->string('uid');
@@ -108,6 +113,7 @@ class FunctionalTest extends PHPUnit_Framework_TestCase {
 		]));
 	}
 
+	// Test that a record is created in the same database
 	function testExists() {
 		$this->initUpchuck();
 		$this->setUpDatabase();
@@ -130,6 +136,56 @@ class FunctionalTest extends PHPUnit_Framework_TestCase {
 		// Test one to many
 		$this->assertEquals(1, $clone->photos()->count());
 		$photo = $clone->photos()->first();
+
+		// Test excemptions
+		$this->assertNull($photo->source);
+
+		// Test callbacks
+		$this->assertNotEquals(1, $photo->uid);
+
+		// Test the file was created in a different place
+		$this->assertNotEquals('/uploads/test.jpg', $photo->image);
+
+		// Test that the file is the same
+		$path = $this->helpers->path($photo->image);
+		$this->assertTrue($this->disk->has($path));
+		$this->assertEquals('contents', $this->disk->read($path));
+	}
+
+	// Test that model is created in a differetnt database.  These checks don't
+	// use eloquent because Laravel has issues with relationships on models in
+	// a different connection
+	// https://github.com/laravel/framework/issues/9355
+	function testExistsInAltDatabase() {
+		$this->initUpchuck();
+		$this->setUpDatabase();
+		$this->migrateTables();
+		$this->migrateTables('alt');
+		$this->seed();
+
+		// Make sure that the alt databse is empty
+		$this->assertEquals(0, DB::connection('alt')->table('articles')->count());
+		$this->assertEquals(0, DB::connection('alt')->table('authors')->count());
+		$this->assertEquals(0, DB::connection('alt')->table('photos')->count());
+
+		$cloner = new Cloner($this->upchuck);
+		$clone = $cloner->duplicateTo($this->article, 'alt');
+
+		// Test that the new article was created
+		$this->assertEquals(1, DB::connection('alt')->table('articles')->count());
+		$clone = DB::connection('alt')->table('articles')->first();
+		$this->assertEquals(1 , $clone->id);
+		$this->assertEquals('Test', $clone->title);
+
+		// Test that mamny to many failed
+		$this->assertEquals(0, DB::connection('alt')->table('authors')
+			->where('article_id', $clone->id)->count());
+
+		// Test one to many
+		$this->assertEquals(1, DB::connection('alt')->table('photos')
+			->where('article_id', $clone->id)->count());
+		$photo = DB::connection('alt')->table('photos')
+			->where('article_id', $clone->id)->first();
 
 		// Test excemptions
 		$this->assertNull($photo->source);
