@@ -1,5 +1,8 @@
 <?php namespace Bkwld\Cloner;
 
+// Deps
+use Illuminate\Events\Dispatcher as Events;
+
 /**
  * Core class that traverses a model's relationships and replicates model
  * attributes
@@ -12,6 +15,11 @@ class Cloner {
 	private $attachment;
 
 	/**
+	 * @var Events
+	 */
+	private $events;
+
+	/**
 	 * @var string
 	 */
 	private $write_connection;
@@ -21,8 +29,10 @@ class Cloner {
 	 *
 	 * @param AttachmentAdapter $attachment
 	 */
-	public function __construct(AttachmentAdapter $attachment = null) {
+	public function __construct(AttachmentAdapter $attachment = null,
+		Events $events = null) {
 		$this->attachment = $attachment;
+		$this->events = $events;
 	}
 
 	/**
@@ -93,10 +103,18 @@ class Cloner {
 	 * @return void
 	 */
 	protected function saveClone($clone, $relation = null, $src) {
+
+		// Notify listeners via callback or event
 		if (method_exists($clone, 'onCloning')) $clone->onCloning($src);
+		$this->events->fire('cloner::cloning: '.get_class($src), [$clone, $src]);
+
+		// Do the save
 		if ($relation) $relation->save($clone);
 		else $clone->save();
+
+		// Notify listeners via callback or event
 		if (method_exists($clone, 'onCloned')) $clone->onCloned($src);
+		$this->events->fire('cloner::cloned: '.get_class($src), [$clone, $src]);
 	}
 
 	/**

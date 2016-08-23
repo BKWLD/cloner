@@ -12,6 +12,7 @@ use Illuminate\Database\Capsule\Manager as DB;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Vfs\VfsAdapter as Adapter;
 use League\Flysystem\MountManager;
+use Mockery as m;
 use VirtualFileSystem\FileSystem as Vfs;
 
 class FunctionalTest extends PHPUnit_Framework_TestCase {
@@ -41,7 +42,10 @@ class FunctionalTest extends PHPUnit_Framework_TestCase {
 			$storage,
 			$this->disk
 		);
+	}
 
+	protected function mockEvents() {
+		return m::mock('Illuminate\Events\Dispatcher', [ 'fire' => null ]);
 	}
 
 	// https://github.com/laracasts/TestDummy/blob/master/tests/FactoryTest.php#L18
@@ -120,7 +124,7 @@ class FunctionalTest extends PHPUnit_Framework_TestCase {
 		$this->migrateTables();
 		$this->seed();
 
-		$cloner = new Cloner($this->upchuck);
+		$cloner = new Cloner($this->upchuck, $this->mockEvents());
 		$clone = $cloner->duplicate($this->article);
 
 		// Test that the new article was created
@@ -168,7 +172,7 @@ class FunctionalTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(0, DB::connection('alt')->table('authors')->count());
 		$this->assertEquals(0, DB::connection('alt')->table('photos')->count());
 
-		$cloner = new Cloner($this->upchuck);
+		$cloner = new Cloner($this->upchuck, $this->mockEvents());
 		$clone = $cloner->duplicateTo($this->article, 'alt');
 
 		// Test that the new article was created

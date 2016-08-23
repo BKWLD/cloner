@@ -18,7 +18,10 @@ class ServiceProvider extends LaravelServiceProvider {
 
 		// Instantiate main Cloner instance
 		$this->app->singleton('cloner', function($app) {
-			return new Cloner($app['cloner.attachment-adapter']);
+			return new Cloner(
+				$app['cloner.attachment-adapter'],
+				$app['events']
+			);
 		});
 
 		// Instantiate default Upchuck attachment adapter if the app is using Upchuck.

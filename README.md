@@ -87,6 +87,13 @@ The `$clone_exempt_attributes` adds to the defaults.  If you want to replace the
 
 Also, note the `onCloning()` method in the example.  It is being used to make sure a unique column stays unique.  The `Cloneable` trait adds to no-op callbacks that get called immediately before a model is saved during a duplication and immediately after: `onCloning()` and `onCloned()`.
 
+In addition, Cloner fires the following Laravel events during cloning:
+
+- `cloner::cloning: ModelClass`
+- `cloner::cloned: ModelClass`
+
+`ModelClass` is the classpath of the model being cloned.  The event payload contains the clone and the original model instances.
+
 
 ### Cloning files
 
