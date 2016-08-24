@@ -45,7 +45,7 @@ Lets say your `Article` has many `Photos` (a one to many relationship) and can h
 class Article extends Eloquent {
 	use Bkwld\Cloner\Cloneable;
 
-	private $cloneable_relations = ['photos', 'authors'];
+	protected $cloneable_relations = ['photos', 'authors'];
 
 	public function photos() {
 		return $this->hasMany('Photo');
@@ -70,7 +70,7 @@ By default, `Cloner` does not copy the `id` (or whatever you've defined as the `
 class Photo extends Eloquent {
 	use Bkwld\Cloner\Cloneable;
 
-	private $clone_exempt_attributes = ['uid', 'source'];
+	protected $clone_exempt_attributes = ['uid', 'source'];
 
 	public function article() {
 		return $this->belongsTo('Article');
@@ -103,7 +103,7 @@ If your model references files saved disk, you'll probably want to duplicate tho
 class Photo extends Eloquent {
 	use Bkwld\Cloner\Cloneable;
 
-	private $cloneable_file_attributes = ['image'];
+	protected $cloneable_file_attributes = ['image'];
 
 	public function article() {
 		return $this->belongsTo('Article');
