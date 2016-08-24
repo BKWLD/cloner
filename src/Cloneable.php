@@ -71,16 +71,18 @@ trait Cloneable {
 	 * A no-op callback that gets fired when a model is cloning but before it gets
 	 * committed to the database
 	 *
-	 * @return  void
+	 * @param  Illuminate\Database\Eloquent\Model $src
+	 * @return void
 	 */
-	public function onCloning() {}
+	public function onCloning($src) {}
 
 	/**
 	 * A no-op callback that gets fired when a model is cloned and saved to the
 	 * database
 	 *
-	 * @return  void
+	 * @param  Illuminate\Database\Eloquent\Model $src
+	 * @return void
 	 */
-	public function onCloned() {}
+	public function onCloned($src) {}
 
 }
