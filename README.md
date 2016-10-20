@@ -1,6 +1,6 @@
 # Cloner
 
-[![Packagist](https://img.shields.io/packagist/v/BKWLD/cloner.svg)](https://packagist.org/packages/bkwld/cloner) [![Build Status](https://travis-ci.org/BKWLD/cloner.svg?branch=master)](https://travis-ci.org/BKWLD/cloner) 
+[![Packagist](https://img.shields.io/packagist/v/BKWLD/cloner.svg)](https://packagist.org/packages/bkwld/cloner) [![Build Status](https://travis-ci.org/BKWLD/cloner.svg?branch=master)](https://travis-ci.org/BKWLD/cloner) [![Coverage Status](https://coveralls.io/repos/github/BKWLD/cloner/badge.svg?branch=master)](https://coveralls.io/github/BKWLD/cloner?branch=master)
 
 A trait for Laravel Eloquent models that lets you clone a model and it's relationships, including files. Even to another database.
 
