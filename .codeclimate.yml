@@ -1,5 +1,13 @@
 languages:
   PHP: true
+
 exclude_paths:
   - "tests/*"
   - "stubs/*"
+
+engines:
+  phpmd:
+    enabled: true
+    checks:
+      Controversial/CamelCaseParameterName:
+        enabled: false
