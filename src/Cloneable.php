@@ -49,6 +49,17 @@ trait Cloneable {
 	}
 
 	/**
+	 * Add a relation to cloneable_relations
+	 *
+	 * @param  string $relation
+	 * @return void
+	 */
+	public function addCloneableRelation($relation) {
+		if (!isset($this->cloneable_relations)) return;
+		$this->cloneable_relations[] = $relation;
+	}
+
+	/**
 	 * Clone the current model instance
 	 *
 	 * @return Illuminate\Database\Eloquent\Model The new, saved clone
