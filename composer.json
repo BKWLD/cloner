@@ -18,7 +18,7 @@
 		"illuminate/database": "4 - 5",
 		"league/flysystem-vfs": "^1.0",
 		"mockery/mockery": "^0.9.4",
-		"codeclimate/php-test-reporter": "dev-master"
+		"satooshi/php-coveralls": "^1.0"
 	},
 	"suggest": {
 		"bkwld/upchuck": "Required for replicating of files."
