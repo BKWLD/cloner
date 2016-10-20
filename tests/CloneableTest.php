@@ -46,4 +46,11 @@ class CloneableTest extends PHPUnit_Framework_TestCase {
 		$this->assertContains('test', $article->getCloneableRelations());
 	}
 
+	public function testAddDuplicateRelation() {
+		$article = new Article;
+		$article->addCloneableRelation('test');
+		$article->addCloneableRelation('test');
+		$this->assertEquals(['photos', 'authors', 'test'], $article->getCloneableRelations());
+	}
+
 }

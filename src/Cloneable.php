@@ -49,13 +49,14 @@ trait Cloneable {
 	}
 
 	/**
-	 * Add a relation to cloneable_relations
+	 * Add a relation to cloneable_relations uniquely
 	 *
 	 * @param  string $relation
 	 * @return void
 	 */
 	public function addCloneableRelation($relation) {
 		if (!isset($this->cloneable_relations)) return;
+		if (in_array($relation, $this->cloneable_relations)) return;
 		$this->cloneable_relations[] = $relation;
 	}
 
