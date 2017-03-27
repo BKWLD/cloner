@@ -55,9 +55,10 @@ trait Cloneable {
 	 * @return void
 	 */
 	public function addCloneableRelation($relation) {
-		if (!isset($this->cloneable_relations)) return;
-		if (in_array($relation, $this->cloneable_relations)) return;
-		$this->cloneable_relations[] = $relation;
+		$relations = $this->getCloneableRelations();
+		if (in_array($relation, $relations)) return;
+		$relations[] = $relation;
+		$this->cloneable_relations = $relations;
 	}
 
 	/**
