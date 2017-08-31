@@ -85,9 +85,10 @@ trait Cloneable {
 	 * committed to the database
 	 *
 	 * @param  Illuminate\Database\Eloquent\Model $src
+	 * @param  boolean $child
 	 * @return void
 	 */
-	public function onCloning($src) {}
+	public function onCloning($src, $child = null) {}
 
 	/**
 	 * A no-op callback that gets fired when a model is cloned and saved to the

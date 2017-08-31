@@ -100,12 +100,16 @@ class Cloner {
 	 * @param  Illuminate\Database\Eloquent\Model $clone
 	 * @param  Illuminate\Database\Eloquent\Relations\Relation $relation
 	 * @param  Illuminate\Database\Eloquent\Model $src The orginal model
+	 * @param  boolean $child
 	 * @return void
 	 */
-	protected function saveClone($clone, $relation = null, $src) {
+	protected function saveClone($clone, $relation = null, $src, $child = null) {
+
+		// Set the child flag
+		if ($relation) $child = true;
 
 		// Notify listeners via callback or event
-		if (method_exists($clone, 'onCloning')) $clone->onCloning($src);
+		if (method_exists($clone, 'onCloning')) $clone->onCloning($src, $child);
 		$this->events->fire('cloner::cloning: '.get_class($src), [$clone, $src]);
 
 		// Do the save
