@@ -76,8 +76,9 @@ class Photo extends Eloquent {
 		return $this->belongsTo('Article');
 	}
 
-	public function onCloning($src) {
+	public function onCloning($src, $child = null) {
 		$this->uid = str_random();
+		if($child) echo 'This was cloned as a relation!';
 		echo 'The original key is: '.$src->getKey();
 	}
 }
@@ -85,7 +86,7 @@ class Photo extends Eloquent {
 
 The `$clone_exempt_attributes` adds to the defaults.  If you want to replace the defaults altogether, override the trait's `getCloneExemptAttributes()` method and return an array.  
 
-Also, note the `onCloning()` method in the example.  It is being used to make sure a unique column stays unique.  The `Cloneable` trait adds to no-op callbacks that get called immediately before a model is saved during a duplication and immediately after: `onCloning()` and `onCloned()`.
+Also, note the `onCloning()` method in the example.  It is being used to make sure a unique column stays unique.  The `Cloneable` trait adds to no-op callbacks that get called immediately before a model is saved during a duplication and immediately after: `onCloning()` and `onCloned()`. The `$child` parameter allows you to customize the behavior based on if it's being cloned as a relation or direct.
 
 In addition, Cloner fires the following Laravel events during cloning:
 
