@@ -32,5 +32,12 @@
 		"psr-4": {
 			"Bkwld\\Cloner\\Stubs\\": "stubs/"
 		}
+	},
+	"extra": {
+		"laravel": {
+			"providers": [
+				"Bkwld\\Cloner\\ServiceProvider"
+			]
+		}
 	}
 }
