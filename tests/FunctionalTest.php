@@ -158,6 +158,12 @@ class FunctionalTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(2, $clone->id);
 		$this->assertEquals('Test', $clone->title);
 
+		// Test if the timestamps have been reset
+        $this->assertNotNull($clone->created_at);
+        $this->assertTrue($this->article->created_at->lt($clone->created_at));
+        $this->assertNotNull($clone->updated_at);
+        $this->assertTrue($this->article->created_at->lt($clone->updated_at));
+
 		// Test many to many
 		$this->assertEquals(1, $clone->authors()->count());
 		$this->assertEquals('Steve', $clone->authors()->first()->name);
