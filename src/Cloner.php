@@ -167,13 +167,13 @@ class Cloner {
 		if ($this->write_connection) return;
 
 		// Loop trough current relations and attach to clone
-		$relation->get()->each(function($foreign) use ($clone, $relation_name) {
-            $pivot_attributes = array_except($foreign->pivot->getAttributes(), [
-                $foreign->pivot->getRelatedKey(),
-                $foreign->pivot->getForeignKey(),
-                $foreign->pivot->getCreatedAtColumn(),
-                $foreign->pivot->getUpdatedAtColumn()
-            ]);
+		$relation->get()->each(function ($foreign) use ($clone, $relation_name) {
+			$pivot_attributes = array_except($foreign->pivot->getAttributes(), [
+				$foreign->pivot->getRelatedKey(),
+				$foreign->pivot->getForeignKey(),
+				$foreign->pivot->getCreatedAtColumn(),
+				$foreign->pivot->getUpdatedAtColumn()
+			]);
 			$clone->$relation_name()->attach($foreign, $pivot_attributes);
 		});
 	}

@@ -17,6 +17,6 @@ class Article extends Eloquent {
 	}
 
 	public function ratings() {
-	    return $this->belongsToMany(User::class)->withPivot('rating')->withTimestamps();
-    }
+		return $this->belongsToMany(User::class)->withPivot('rating')->withTimestamps();
+	}
 }

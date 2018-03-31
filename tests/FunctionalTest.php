@@ -19,7 +19,7 @@ use VirtualFileSystem\FileSystem as Vfs;
 
 class FunctionalTest extends PHPUnit_Framework_TestCase {
 
-    private $article;
+	private $article;
 
     protected function initUpchuck() {
 
@@ -99,18 +99,18 @@ class FunctionalTest extends PHPUnit_Framework_TestCase {
 			$table->timestamps();
 		});
 
-        DB::connection($connection)->getSchemaBuilder()->create('users', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('name');
-            $table->timestamps();
-        });
+		DB::connection($connection)->getSchemaBuilder()->create('users', function (Blueprint $table) {
+			$table->increments('id');
+			$table->string('name');
+			$table->timestamps();
+		});
 
-        DB::connection($connection)->getSchemaBuilder()->create('article_user', function (Blueprint $table) {
-            $table->integer('rating')->unsigned();
-            $table->integer('user_id')->unsigned();
-            $table->integer('article_id')->unsigned();
-            $table->timestamps();
-        });
+		DB::connection($connection)->getSchemaBuilder()->create('article_user', function (Blueprint $table) {
+			$table->integer('rating')->unsigned();
+			$table->integer('user_id')->unsigned();
+			$table->integer('article_id')->unsigned();
+			$table->timestamps();
+		});
 	}
 
 	protected function seed() {
@@ -125,10 +125,10 @@ class FunctionalTest extends PHPUnit_Framework_TestCase {
 		]));
 
 		$this->article->ratings()->attach(User::create([
-		    'name' => 'Peter'
-        ]), [
-            'rating' => 4
-        ]);
+			'name' => 'Peter'
+		]), [
+			'rating' => 4
+		]);
 
 		$this->disk->write('test.jpg', 'contents');
 
@@ -147,8 +147,8 @@ class FunctionalTest extends PHPUnit_Framework_TestCase {
 		$this->migrateTables();
 		$this->seed();
 
-        // Wait 1.5 seconds to be able to detect a difference in the timestamps
-        usleep(1500000);
+		// Wait 1.5 seconds to be able to detect a difference in the timestamps
+		usleep(1500000);
 
 		$cloner = new Cloner($this->upchuck_adapter, $this->mockEvents());
 		$clone = $cloner->duplicate($this->article);
@@ -159,10 +159,10 @@ class FunctionalTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('Test', $clone->title);
 
 		// Test if the timestamps have been reset
-        $this->assertNotNull($clone->created_at);
-        $this->assertTrue($this->article->created_at->lt($clone->created_at));
-        $this->assertNotNull($clone->updated_at);
-        $this->assertTrue($this->article->created_at->lt($clone->updated_at));
+		$this->assertNotNull($clone->created_at);
+		$this->assertTrue($this->article->created_at->lt($clone->created_at));
+		$this->assertNotNull($clone->updated_at);
+		$this->assertTrue($this->article->created_at->lt($clone->updated_at));
 
 		// Test many to many
 		$this->assertEquals(1, $clone->authors()->count());
@@ -170,17 +170,17 @@ class FunctionalTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(2, DB::table('article_author')->count());
 
 		// Test many to many with pivot
-        $this->assertEquals(1, $clone->ratings()->count());
-        $this->assertEquals('Peter', $clone->ratings()->first()->name);
-        $this->assertEquals(2, DB::table('article_user')->count());
+		$this->assertEquals(1, $clone->ratings()->count());
+		$this->assertEquals('Peter', $clone->ratings()->first()->name);
+		$this->assertEquals(2, DB::table('article_user')->count());
 
-        // Test if the timestamps in the pivot table have been reset
-        $this->assertNotNull($this->article->ratings()->first()->pivot->created_at);
-        $this->assertNotNull($clone->ratings()->first()->pivot->created_at);
-        $this->assertTrue($this->article->ratings()->first()->pivot->created_at->lt($clone->ratings()->first()->pivot->created_at));
-        $this->assertNotNull($this->article->ratings()->first()->pivot->updated_at);
-        $this->assertNotNull($clone->ratings()->first()->pivot->updated_at);
-        $this->assertTrue($this->article->ratings()->first()->pivot->updated_at->lt($clone->ratings()->first()->pivot->updated_at));
+		// Test if the timestamps in the pivot table have been reset
+		$this->assertNotNull($this->article->ratings()->first()->pivot->created_at);
+		$this->assertNotNull($clone->ratings()->first()->pivot->created_at);
+		$this->assertTrue($this->article->ratings()->first()->pivot->created_at->lt($clone->ratings()->first()->pivot->created_at));
+		$this->assertNotNull($this->article->ratings()->first()->pivot->updated_at);
+		$this->assertNotNull($clone->ratings()->first()->pivot->updated_at);
+		$this->assertTrue($this->article->ratings()->first()->pivot->updated_at->lt($clone->ratings()->first()->pivot->updated_at));
 
 		// Test one to many
 		$this->assertEquals(1, $clone->photos()->count());
