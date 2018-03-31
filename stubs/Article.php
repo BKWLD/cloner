@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 class Article extends Eloquent {
 	use Cloneable;
 
-	public $cloneable_relations = ['photos', 'authors'];
+	public $cloneable_relations = ['photos', 'authors', 'ratings'];
 
 	public function photos() {
 		return $this->hasMany('Bkwld\Cloner\Stubs\Photo');
@@ -15,4 +15,8 @@ class Article extends Eloquent {
 	public function authors() {
 		return $this->belongsToMany('Bkwld\Cloner\Stubs\Author');
 	}
+
+	public function ratings() {
+	    return $this->belongsToMany(User::class)->withPivot('rating')->withTimestamps();
+    }
 }
