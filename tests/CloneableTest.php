@@ -37,7 +37,7 @@ class CloneableTest extends PHPUnit_Framework_TestCase {
 
 	public function testGetRelations() {
 		$article = new Article;
-		$this->assertEquals(['photos', 'authors'], $article->getCloneableRelations());
+		$this->assertEquals(['photos', 'authors', 'ratings'], $article->getCloneableRelations());
 	}
 
 	public function testAddRelation() {
@@ -50,7 +50,7 @@ class CloneableTest extends PHPUnit_Framework_TestCase {
 		$article = new Article;
 		$article->addCloneableRelation('test');
 		$article->addCloneableRelation('test');
-		$this->assertEquals(['photos', 'authors', 'test'], $article->getCloneableRelations());
+		$this->assertEquals(['photos', 'authors', 'ratings', 'test'], $article->getCloneableRelations());
 	}
 
 }
