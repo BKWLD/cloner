@@ -53,4 +53,8 @@ class CloneableTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(['photos', 'authors', 'ratings', 'test'], $article->getCloneableRelations());
 	}
 
+	public function testCountColumnsAreExempt() {
+	    $article = new Article;
+	    $this->assertContains('photos_count', $article->getCloneExemptAttributes());
+    }
 }

@@ -15,12 +15,19 @@ trait Cloneable {
 	 */
 	public function getCloneExemptAttributes() {
 
-		// Alwyas make the id and timestamps exempt
+		// Always make the id and timestamps exempt
 		$defaults = [
 			$this->getKeyName(),
 			$this->getCreatedAtColumn(),
 			$this->getUpdatedAtColumn(),
 		];
+
+		// Include the model count columns in the exempt columns
+		$count_columns = array_map(function($count_column) {
+		    return $count_column . '_count';
+        	}, $this->withCount);
+
+		$defaults = array_merge($defaults, $count_columns);
 
 		// It none specified, just return the defaults, else, merge them
 		if (!isset($this->clone_exempt_attributes)) return $defaults;
