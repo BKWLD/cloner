@@ -25,7 +25,7 @@ trait Cloneable {
 		// Include the model count columns in the exempt columns
 		$count_columns = array_map(function($count_column) {
 		    return $count_column . '_count';
-        }, $this->withCount);
+        	}, $this->withCount);
 
 		$defaults = array_merge($defaults, $count_columns);
 
