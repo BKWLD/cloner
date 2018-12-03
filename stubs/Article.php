@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 class Article extends Eloquent {
 	use Cloneable;
 
+	protected $withCount = ['photos'];
+
 	public $cloneable_relations = ['photos', 'authors', 'ratings'];
 
 	public function photos() {
