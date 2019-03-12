@@ -49,7 +49,7 @@ class FunctionalTest extends PHPUnit_Framework_TestCase {
 	}
 
 	protected function mockEvents() {
-		return m::mock('Illuminate\Events\Dispatcher', [ 'fire' => null ]);
+		return m::mock('Illuminate\Events\Dispatcher', [ 'dispatch' => null ]);
 	}
 
 	// https://github.com/laracasts/TestDummy/blob/master/tests/FactoryTest.php#L18
