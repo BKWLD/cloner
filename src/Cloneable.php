@@ -134,6 +134,40 @@ trait Cloneable
     }
 
     /**
+     * Fire a cloning or cloned event.
+     *
+     * @param string                                          $event
+     * @param Illuminate\Database\Eloquent\Model              $src      The orginal model
+     * @param bool                                            $child
+     *
+     * @return void
+     */
+    public function fireCloneableEvent(string $event, Model $src, bool $child = false)
+    {
+        if (! isset(static::$dispatcher)) {
+            return true;
+        }
+
+        $halt = false;
+
+        $method = $halt ? 'until' : 'dispatch';
+        
+        if (isset($this->dispatchesEvents[$event])) {
+            $result = static::$dispatcher->$method(new $this->dispatchesEvents[$event]([$this, $src, $child]));
+        }
+        
+        $result = $this->filterModelEventResults($result);
+
+        if ($result === false) {
+            return false;
+        }
+
+        return ! empty($result) ? $result : static::$dispatcher->{$method}(
+            "eloquent.{$event}: ".static::class, [$this, $src, $child]
+        );
+    }
+
+    /**
      * Register a cloning model event with the dispatcher.
      *
      * @param  \Closure|string  $callback
