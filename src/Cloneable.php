@@ -26,20 +26,19 @@ trait Cloneable
 
         // Include the relationship count columns in the exempt columns
         $count_columns = [];
-        
+
         foreach ($this->withCount as $name => $constraints) {
-            
             if (is_numeric($name)) {
                 $name = $constraints;
             }
-            
+
             $segments = explode(' ', $name);
             unset($alias);
-            
+
             if (count($segments) === 3 && Str::lower($segments[1]) === 'as') {
                 [$name, $alias] = [$segments[0], $segments[2]];
             }
-            
+
             $count_columns[] = $alias ?? Str::snake($name.'_count');
         }
 
@@ -92,11 +91,11 @@ trait Cloneable
     public function addCloneableRelation(string $relation)
     {
         $relations = $this->getCloneableRelations();
-        
+
         if (in_array($relation, $relations)) {
             return;
         }
-        
+
         $relations[] = $relation;
         $this->cloneable_relations = $relations;
     }

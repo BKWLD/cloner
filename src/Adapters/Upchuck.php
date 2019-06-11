@@ -55,7 +55,7 @@ class Upchuck implements AttachmentAdapter
         // Make the destination path
         $current_path = $this->helpers->path($url);
         $filename = basename($current_path);
-        
+
         $dst_disk = $this->disks ? $this->disks->getFilesystem('dst') : $this->disk;
         $new_path = $this->storage->makeNestedAndUniquePath($filename, $dst_disk);
 

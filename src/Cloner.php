@@ -2,9 +2,9 @@
 
 namespace Bkwld\Cloner;
 
-use Illuminate\Events\Dispatcher as Events;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Events\Dispatcher as Events;
 
 /**
  * Core class that traverses a model's relationships and replicates model
@@ -69,7 +69,7 @@ class Cloner
         $this->write_connection = $connection; // Store the write database connection
         $clone = $this->duplicate($model); // Do a normal duplicate
         $this->write_connection = null; // Null out the connection for next run
-        
+
         return $clone;
     }
 
@@ -83,9 +83,9 @@ class Cloner
     protected function cloneModel(Model $model)
     {
         $exempt = method_exists($model, 'getCloneExemptAttributes') ? $model->getCloneExemptAttributes() : null;
-            
+
         $clone = $model->replicate($exempt);
-        
+
         if ($this->write_connection) {
             $clone->setConnection($this->write_connection);
         }
@@ -106,13 +106,12 @@ class Cloner
         if (!$this->attachment || !method_exists($clone, 'getCloneableFileAttributes')) {
             return;
         }
-        
+
         foreach ($clone->getCloneableFileAttributes() as $attribute) {
-            
             if (!$original = $clone->getAttribute($attribute)) {
                 continue;
             }
-            
+
             $clone->setAttribute($attribute, $this->attachment->duplicate($original));
         }
     }
@@ -139,7 +138,7 @@ class Cloner
         if (method_exists($clone, 'onCloning')) {
             $clone->onCloning($src, $child);
         }
-        
+
         $this->events->dispatch('cloner::cloning: '.get_class($src), [$clone, $src]);
 
         // Do the save
@@ -153,7 +152,7 @@ class Cloner
         if (method_exists($clone, 'onCloned')) {
             $clone->onCloned($src);
         }
-        
+
         $this->events->dispatch('cloner::cloned: '.get_class($src), [$clone, $src]);
     }
 
@@ -170,7 +169,7 @@ class Cloner
         if (!method_exists($model, 'getCloneableRelations')) {
             return;
         }
-        
+
         foreach ($model->getCloneableRelations() as $relation_name) {
             $this->duplicateRelation($model, $relation_name, $clone);
         }
@@ -188,7 +187,7 @@ class Cloner
     protected function duplicateRelation(Model $model, string $relation_name, Model $clone)
     {
         $relation = call_user_func([$model, $relation_name]);
-        
+
         if (is_a($relation, 'Illuminate\Database\Eloquent\Relations\BelongsToMany')) {
             $this->duplicatePivotedRelation($relation, $relation_name, $clone);
         } else {
@@ -217,14 +216,13 @@ class Cloner
 
         // Loop trough current relations and attach to clone
         $relation->get()->each(function ($foreign) use ($clone, $relation_name) {
-            
             $pivot_attributes = array_except($foreign->pivot->getAttributes(), [
                 $foreign->pivot->getRelatedKey(),
                 $foreign->pivot->getForeignKey(),
                 $foreign->pivot->getCreatedAtColumn(),
                 $foreign->pivot->getUpdatedAtColumn(),
             ]);
-            
+
             $clone->$relation_name()->attach($foreign, $pivot_attributes);
         });
     }
