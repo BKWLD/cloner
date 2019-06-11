@@ -17,8 +17,11 @@ A trait for Laravel Eloquent models that lets you clone a model and it's relatio
 Your model should now look like this:
 
 ```php
-class Article extends Eloquent {
-	use \Bkwld\Cloner\Cloneable;
+use Bkwld\Cloner\Cloneable;
+
+class Article extends Eloquent
+{
+    use Cloneable;
 }
 ```
 
@@ -42,18 +45,23 @@ Where `production` is the [connection name](https://laravel.com/docs/5.2/databas
 Lets say your `Article` has many `Photos` (a one to many relationship) and can have more than one `Authors` (a many to many relationship).  Now, your `Article` model should look like this:
 
 ```php
-class Article extends Eloquent {
-	use \Bkwld\Cloner\Cloneable;
+use Bkwld\Cloner\Cloneable;
 
-	protected $cloneable_relations = ['photos', 'authors'];
-
-	public function photos() {
-		return $this->hasMany('Photo');
-	}
-
-	public function authors() {
-		return $this->belongsToMany('Author');
-	}
+class Article extends Eloquent
+{
+    use Cloneable;
+    
+    protected $cloneable_relations = ['photos', 'authors'];
+    
+    public function photos()
+    {
+        return $this->hasMany('Photo');
+    }
+    
+    public function authors()
+    {
+        return $this->belongsToMany('Author');
+    }
 }
 ```
 
@@ -67,20 +75,29 @@ The `$cloneable_relations` informs the `Cloneable` as to which relations it shou
 By default, `Cloner` does not copy the `id` (or whatever you've defined as the `key` for the model) field; it assumes a new value will be auto-incremented.  It also does not copy the `created_at` or `updated_at`.  You can add additional attributes to ignore as follows:
 
 ```php
-class Photo extends Eloquent {
-	use \Bkwld\Cloner\Cloneable;
+use Bkwld\Cloner\Cloneable;
 
-	protected $clone_exempt_attributes = ['uid', 'source'];
+class Photo extends Eloquent
+{
+    use Cloneable;
+    
+    protected $clone_exempt_attributes = ['uid', 'source'];
+    
+    public function article()
+    {
+        return $this->belongsTo('Article');
+    }
+    
+    public function onCloning($src, $child = null)
+    {
+        $this->uid = str_random();
 
-	public function article() {
-		return $this->belongsTo('Article');
-	}
+        if ($child) { 
+            echo 'This was cloned as a relation!';
+        }
 
-	public function onCloning($src, $child = null) {
-		$this->uid = str_random();
-		if($child) echo 'This was cloned as a relation!';
-		echo 'The original key is: '.$src->getKey();
-	}
+        echo 'The original key is: '.$src->getKey();
+    }
 }
 ```
 
@@ -101,14 +118,18 @@ In addition, Cloner fires the following Laravel events during cloning:
 If your model references files saved disk, you'll probably want to duplicate those files and update the references.  Otherwise, if the clone is deleted and it cascades delets, you will delete files referenced by your original model.  `Cloner` allows you to specify a file attachment adapter and ships with support for [Bkwld\Upchuck](https://github.com/BKWLD/upchuck).  Here's some example usage:
 
 ```php
-class Photo extends Eloquent {
-	use \Bkwld\Cloner\Cloneable;
+use Bkwld\Cloner\Cloneable;
 
-	protected $cloneable_file_attributes = ['image'];
-
-	public function article() {
-		return $this->belongsTo('Article');
-	}
+class Photo extends Eloquent
+{
+    use Cloneable;
+    
+    protected $cloneable_file_attributes = ['image'];
+    
+    public function article()
+    {
+        return $this->belongsTo('Article');
+    }
 }
 ```
 
@@ -118,6 +139,6 @@ If you don't use [Bkwld\Upchuck](https://github.com/BKWLD/upchuck) you can write
 
 ```php
 App::singleton('cloner.attachment-adapter', function($app) {
-	return new CustomAttachmentAdapter;
+    return new CustomAttachmentAdapter;
 });
 ```
