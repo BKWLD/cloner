@@ -2,8 +2,8 @@
 
 namespace Bkwld\Cloner;
 
-// Deps
 use App;
+use Illuminate\Support\Str;
 
 /**
  * Mixin accessor methods, callbacks, and the duplicate() helper into models.
@@ -17,7 +17,6 @@ trait Cloneable
      */
     public function getCloneExemptAttributes()
     {
-
         // Always make the id and timestamps exempt
         $defaults = [
             $this->getKeyName(),
@@ -25,10 +24,24 @@ trait Cloneable
             $this->getUpdatedAtColumn(),
         ];
 
-        // Include the model count columns in the exempt columns
-        $count_columns = array_map(function ($count_column) {
-            return $count_column.'_count';
-        }, $this->withCount);
+        // Include the relationship count columns in the exempt columns
+        $count_columns = [];
+        
+        foreach ($this->withCount as $name => $constraints) {
+            
+            if (is_numeric($name)) {
+                $name = $constraints;
+            }
+            
+            $segments = explode(' ', $name);
+            unset($alias);
+            
+            if (count($segments) === 3 && Str::lower($segments[1]) === 'as') {
+                [$name, $alias] = [$segments[0], $segments[2]];
+            }
+            
+            $count_columns[] = $alias ?? Str::snake($name.'_count');
+        }
 
         $defaults = array_merge($defaults, $count_columns);
 
@@ -76,12 +89,14 @@ trait Cloneable
      *
      * @return void
      */
-    public function addCloneableRelation($relation)
+    public function addCloneableRelation(string $relation)
     {
         $relations = $this->getCloneableRelations();
+        
         if (in_array($relation, $relations)) {
             return;
         }
+        
         $relations[] = $relation;
         $this->cloneable_relations = $relations;
     }
@@ -103,7 +118,7 @@ trait Cloneable
      *
      * @return Illuminate\Database\Eloquent\Model The new, saved clone
      */
-    public function duplicateTo($connection)
+    public function duplicateTo(string $connection)
     {
         return App::make('cloner')->duplicateTo($this, $connection);
     }
@@ -117,8 +132,9 @@ trait Cloneable
      *
      * @return void
      */
-    public function onCloning($src, $child = null)
+    public function onCloning($src, $child = false)
     {
+        //
     }
 
     /**
@@ -131,5 +147,6 @@ trait Cloneable
      */
     public function onCloned($src)
     {
+        //
     }
 }
