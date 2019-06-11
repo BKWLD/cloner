@@ -5,56 +5,60 @@ use Bkwld\Cloner\Stubs\Article;
 use Mockery as m;
 
 /**
- * Test the trait
+ * Test the trait.
  */
-class CloneableTest extends PHPUnit_Framework_TestCase {
+class CloneableTest extends PHPUnit_Framework_TestCase
+{
+    public function testDuplicate()
+    {
+        m::mock('alias:App', [
+            'make' => m::mock('Bkwld\Cloner\Cloner', [
+                'duplicate' => m::mock('Bkwld\Cloner\Stubs\Article'),
+            ]),
+        ]);
 
-	public function testDuplicate() {
+        $article = new Article();
+        $clone = $article->duplicate();
+        $this->assertInstanceOf('Bkwld\Cloner\Stubs\Article', $clone);
+    }
 
-		m::mock('alias:App', [
-			'make' => m::mock('Bkwld\Cloner\Cloner', [
-				'duplicate' => m::mock('Bkwld\Cloner\Stubs\Article'),
-			])
-		]);
+    public function testDuplicateWithDifferentDB()
+    {
+        m::mock('alias:App', [
+            'make' => m::mock('Bkwld\Cloner\Cloner', [
+                'duplicateTo' => m::mock('Bkwld\Cloner\Stubs\Article'),
+            ]),
+        ]);
 
-		$article = new Article;
-		$clone = $article->duplicate();
-		$this->assertInstanceOf('Bkwld\Cloner\Stubs\Article', $clone);
-	}
+        $article = new Article();
+        $clone = $article->duplicateTo('connection');
+        $this->assertInstanceOf('Bkwld\Cloner\Stubs\Article', $clone);
+    }
 
-	public function testDuplicateWithDifferentDB() {
+    public function testGetRelations()
+    {
+        $article = new Article();
+        $this->assertEquals(['photos', 'authors', 'ratings'], $article->getCloneableRelations());
+    }
 
-		m::mock('alias:App', [
-			'make' => m::mock('Bkwld\Cloner\Cloner', [
-				'duplicateTo' => m::mock('Bkwld\Cloner\Stubs\Article'),
-			])
-		]);
+    public function testAddRelation()
+    {
+        $article = new Article();
+        $article->addCloneableRelation('test');
+        $this->assertContains('test', $article->getCloneableRelations());
+    }
 
-		$article = new Article;
-		$clone = $article->duplicateTo('connection');
-		$this->assertInstanceOf('Bkwld\Cloner\Stubs\Article', $clone);
-	}
+    public function testAddDuplicateRelation()
+    {
+        $article = new Article();
+        $article->addCloneableRelation('test');
+        $article->addCloneableRelation('test');
+        $this->assertEquals(['photos', 'authors', 'ratings', 'test'], $article->getCloneableRelations());
+    }
 
-	public function testGetRelations() {
-		$article = new Article;
-		$this->assertEquals(['photos', 'authors', 'ratings'], $article->getCloneableRelations());
-	}
-
-	public function testAddRelation() {
-		$article = new Article;
-		$article->addCloneableRelation('test');
-		$this->assertContains('test', $article->getCloneableRelations());
-	}
-
-	public function testAddDuplicateRelation() {
-		$article = new Article;
-		$article->addCloneableRelation('test');
-		$article->addCloneableRelation('test');
-		$this->assertEquals(['photos', 'authors', 'ratings', 'test'], $article->getCloneableRelations());
-	}
-
-	public function testCountColumnsAreExempt() {
-	    $article = new Article;
-	    $this->assertContains('photos_count', $article->getCloneExemptAttributes());
+    public function testCountColumnsAreExempt()
+    {
+        $article = new Article();
+        $this->assertContains('photos_count', $article->getCloneExemptAttributes());
     }
 }
