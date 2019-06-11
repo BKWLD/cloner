@@ -11,6 +11,17 @@ use Illuminate\Support\Str;
 trait Cloneable
 {
     /**
+     * Boot the Cloneable trait.
+     *
+     * @return void
+     */
+    public static function bootCloneable()
+    {
+        $instance = new static;
+        $instance->addObservableEvents('cloning', 'cloned');
+    }
+
+    /**
      * Return the list of attributes on this model that should be cloned.
      *
      * @return array
@@ -123,29 +134,24 @@ trait Cloneable
     }
 
     /**
-     * A no-op callback that gets fired when a model is cloning but before it gets
-     * committed to the database.
+     * Register a cloning model event with the dispatcher.
      *
-     * @param Illuminate\Database\Eloquent\Model $src
-     * @param bool                               $child
-     *
+     * @param  \Closure|string  $callback
      * @return void
      */
-    public function onCloning($src, $child = false)
+    public static function cloning($callback)
     {
-        //
+        static::registerModelEvent('cloning', $callback);
     }
 
     /**
-     * A no-op callback that gets fired when a model is cloned and saved to the
-     * database.
+     * Register a cloned model event with the dispatcher.
      *
-     * @param Illuminate\Database\Eloquent\Model $src
-     *
+     * @param  \Closure|string  $callback
      * @return void
      */
-    public function onCloned($src)
+    public static function cloned($callback)
     {
-        //
+        static::registerModelEvent('cloned', $callback);
     }
 }
