@@ -2,8 +2,9 @@
 
 namespace Bkwld\Cloner;
 
-// Deps
 use Illuminate\Events\Dispatcher as Events;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 /**
  * Core class that traverses a model's relationships and replicates model
@@ -12,12 +13,12 @@ use Illuminate\Events\Dispatcher as Events;
 class Cloner
 {
     /**
-     * @var AttachmentAdapter
+     * @var \Bkwld\Cloner\AttachmentAdapter
      */
     private $attachment;
 
     /**
-     * @var Events
+     * @var \Illuminate\Events\Dispatcher
      */
     private $events;
 
@@ -27,12 +28,11 @@ class Cloner
     private $write_connection;
 
     /**
-     * DI.
+     * Constructor.
      *
-     * @param AttachmentAdapter $attachment
+     * @param \Bkwld\Cloner\AttachmentAdapter $attachment
      */
-    public function __construct(AttachmentAdapter $attachment = null,
-        Events $events = null)
+    public function __construct(AttachmentAdapter $attachment = null, Events $events = null)
     {
         $this->attachment = $attachment;
         $this->events = $events;
@@ -46,7 +46,7 @@ class Cloner
      *
      * @return Illuminate\Database\Eloquent\Model The new model instance
      */
-    public function duplicate($model, $relation = null)
+    public function duplicate(Model $model, Relation $relation = null)
     {
         $clone = $this->cloneModel($model);
         $this->duplicateAttachments($clone);
@@ -64,11 +64,12 @@ class Cloner
      *
      * @return Illuminate\Database\Eloquent\Model The new model instance
      */
-    public function duplicateTo($model, $connection)
+    public function duplicateTo(Model $model, string $connection)
     {
         $this->write_connection = $connection; // Store the write database connection
         $clone = $this->duplicate($model); // Do a normal duplicate
         $this->write_connection = null; // Null out the connection for next run
+        
         return $clone;
     }
 
@@ -79,11 +80,12 @@ class Cloner
      *
      * @return Illuminate\Database\Eloquent\Model The new model instance
      */
-    protected function cloneModel($model)
+    protected function cloneModel(Model $model)
     {
-        $exempt = method_exists($model, 'getCloneExemptAttributes') ?
-            $model->getCloneExemptAttributes() : null;
+        $exempt = method_exists($model, 'getCloneExemptAttributes') ? $model->getCloneExemptAttributes() : null;
+            
         $clone = $model->replicate($exempt);
+        
         if ($this->write_connection) {
             $clone->setConnection($this->write_connection);
         }
@@ -99,15 +101,18 @@ class Cloner
      *
      * @return void
      */
-    protected function duplicateAttachments($clone)
+    protected function duplicateAttachments(Model $clone)
     {
         if (!$this->attachment || !method_exists($clone, 'getCloneableFileAttributes')) {
             return;
         }
+        
         foreach ($clone->getCloneableFileAttributes() as $attribute) {
+            
             if (!$original = $clone->getAttribute($attribute)) {
                 continue;
             }
+            
             $clone->setAttribute($attribute, $this->attachment->duplicate($original));
         }
     }
@@ -123,9 +128,8 @@ class Cloner
      *
      * @return void
      */
-    protected function saveClone($clone, $relation, $src, $child = null)
+    protected function saveClone(Model $clone, Relation $relation, Model $src, bool $child = false)
     {
-
         // Set the child flag
         if ($relation) {
             $child = true;
@@ -135,6 +139,7 @@ class Cloner
         if (method_exists($clone, 'onCloning')) {
             $clone->onCloning($src, $child);
         }
+        
         $this->events->dispatch('cloner::cloning: '.get_class($src), [$clone, $src]);
 
         // Do the save
@@ -148,6 +153,7 @@ class Cloner
         if (method_exists($clone, 'onCloned')) {
             $clone->onCloned($src);
         }
+        
         $this->events->dispatch('cloner::cloned: '.get_class($src), [$clone, $src]);
     }
 
@@ -159,11 +165,12 @@ class Cloner
      *
      * @return void
      */
-    protected function cloneRelations($model, $clone)
+    protected function cloneRelations(Model $model, Model $clone)
     {
         if (!method_exists($model, 'getCloneableRelations')) {
             return;
         }
+        
         foreach ($model->getCloneableRelations() as $relation_name) {
             $this->duplicateRelation($model, $relation_name, $clone);
         }
@@ -178,9 +185,10 @@ class Cloner
      *
      * @return void
      */
-    protected function duplicateRelation($model, $relation_name, $clone)
+    protected function duplicateRelation(Model $model, string $relation_name, Model $clone)
     {
         $relation = call_user_func([$model, $relation_name]);
+        
         if (is_a($relation, 'Illuminate\Database\Eloquent\Relations\BelongsToMany')) {
             $this->duplicatePivotedRelation($relation, $relation_name, $clone);
         } else {
@@ -198,9 +206,8 @@ class Cloner
      *
      * @return void
      */
-    protected function duplicatePivotedRelation($relation, $relation_name, $clone)
+    protected function duplicatePivotedRelation(Relation $relation, string $relation_name, Model $clone)
     {
-
         // If duplicating between databases, do not duplicate relations. The related
         // instance may not exist in the other database or could have a different
         // primary key.
@@ -210,12 +217,14 @@ class Cloner
 
         // Loop trough current relations and attach to clone
         $relation->get()->each(function ($foreign) use ($clone, $relation_name) {
+            
             $pivot_attributes = array_except($foreign->pivot->getAttributes(), [
                 $foreign->pivot->getRelatedKey(),
                 $foreign->pivot->getForeignKey(),
                 $foreign->pivot->getCreatedAtColumn(),
                 $foreign->pivot->getUpdatedAtColumn(),
             ]);
+            
             $clone->$relation_name()->attach($foreign, $pivot_attributes);
         });
     }
@@ -230,7 +239,7 @@ class Cloner
      *
      * @return void
      */
-    protected function duplicateDirectRelation($relation, $relation_name, $clone)
+    protected function duplicateDirectRelation(Relation $relation, string $relation_name, Model $clone)
     {
         $relation->get()->each(function ($foreign) use ($clone, $relation_name) {
             $this->duplicate($foreign, $clone->$relation_name());
