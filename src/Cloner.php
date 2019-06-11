@@ -18,11 +18,6 @@ class Cloner
     private $attachment;
 
     /**
-     * @var \Illuminate\Events\Dispatcher
-     */
-    private $events;
-
-    /**
      * @var string
      */
     private $write_connection;
@@ -32,10 +27,9 @@ class Cloner
      *
      * @param \Bkwld\Cloner\AttachmentAdapter $attachment
      */
-    public function __construct(AttachmentAdapter $attachment = null, Events $events = null)
+    public function __construct(AttachmentAdapter $attachment = null)
     {
         $this->attachment = $attachment;
-        $this->events = $events;
     }
 
     /**
@@ -134,12 +128,7 @@ class Cloner
             $child = true;
         }
 
-        // Notify listeners via callback or event
-        if (method_exists($clone, 'onCloning')) {
-            $clone->onCloning($src, $child);
-        }
-
-        $this->events->dispatch('cloner::cloning: '.get_class($src), [$clone, $src]);
+        $clone->fireCloneableEvent('cloning', $src, $child);
 
         // Do the save
         if ($relation) {
@@ -148,12 +137,7 @@ class Cloner
             $clone->save();
         }
 
-        // Notify listeners via callback or event
-        if (method_exists($clone, 'onCloned')) {
-            $clone->onCloned($src);
-        }
-
-        $this->events->dispatch('cloner::cloned: '.get_class($src), [$clone, $src]);
+        $clone->fireCloneableEvent('cloned', $src, $child);
     }
 
     /**
