@@ -2,7 +2,6 @@
 
 namespace Bkwld\Cloner\Adapters;
 
-// Deps
 use Bkwld\Cloner\AttachmentAdapter;
 use Bkwld\Upchuck\Helpers;
 use Bkwld\Upchuck\Storage;
@@ -35,11 +34,9 @@ class Upchuck implements AttachmentAdapter
     private $disks;
 
     /**
-     * DI.
+     * Constructor.
      */
-    public function __construct(Helpers $helpers,
-        Storage $storage,
-        Filesystem $disk)
+    public function __construct(Helpers $helpers, Storage $storage, Filesystem $disk)
     {
         $this->helpers = $helpers;
         $this->storage = $storage;
@@ -53,12 +50,12 @@ class Upchuck implements AttachmentAdapter
      *
      * @return string
      */
-    public function duplicate($url)
+    public function duplicate(string $url)
     {
-
         // Make the destination path
         $current_path = $this->helpers->path($url);
         $filename = basename($current_path);
+        
         $dst_disk = $this->disks ? $this->disks->getFilesystem('dst') : $this->disk;
         $new_path = $this->storage->makeNestedAndUniquePath($filename, $dst_disk);
 
@@ -74,7 +71,7 @@ class Upchuck implements AttachmentAdapter
     }
 
     /**
-     * Set a different destination for cloned items.  In doing so, create a
+     * Set a different destination for cloned items. In doing so, create a
      * MountManager instance that will be used to do the copying.
      *
      * @param League\Flysystem\Filesystem $dst
