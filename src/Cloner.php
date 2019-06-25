@@ -1,13 +1,14 @@
 <?php namespace Bkwld\Cloner;
 
 // Deps
-use Illuminate\Events\Dispatcher as Events;
+use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 
 /**
  * Core class that traverses a model's relationships and replicates model
  * attributes
  */
-class Cloner {
+class Cloner
+{
 
 	/**
 	 * @var AttachmentAdapter
@@ -29,8 +30,10 @@ class Cloner {
 	 *
 	 * @param AttachmentAdapter $attachment
 	 */
-	public function __construct(AttachmentAdapter $attachment = null,
-		Events $events = null) {
+	public function __construct(
+		AttachmentAdapter $attachment = null,
+		DispatcherContract $events = null
+	) {
 		$this->attachment = $attachment;
 		$this->events = $events;
 	}
@@ -42,7 +45,8 @@ class Cloner {
 	 * @param  Illuminate\Database\Eloquent\Relations\Relation $relation
 	 * @return Illuminate\Database\Eloquent\Model The new model instance
 	 */
-	public function duplicate($model, $relation = null) {
+	public function duplicate($model, $relation = null)
+	{
 		$clone = $this->cloneModel($model);
 		$this->duplicateAttachments($clone);
 		$this->saveClone($clone, $relation, $model);
@@ -57,7 +61,8 @@ class Cloner {
 	 * @param  string $connection A Laravel database connection
 	 * @return Illuminate\Database\Eloquent\Model The new model instance
 	 */
-	public function duplicateTo($model, $connection) {
+	public function duplicateTo($model, $connection)
+	{
 		$this->write_connection = $connection; // Store the write database connection
 		$clone = $this->duplicate($model); // Do a normal duplicate
 		$this->write_connection = null; // Null out the connection for next run
@@ -70,7 +75,8 @@ class Cloner {
 	 * @param  Illuminate\Database\Eloquent\Model $model
 	 * @return Illuminate\Database\Eloquent\Model The new model instance
 	 */
-	protected function cloneModel($model) {
+	protected function cloneModel($model)
+	{
 		$exempt = method_exists($model, 'getCloneExemptAttributes') ?
 			$model->getCloneExemptAttributes() : null;
 		$clone = $model->replicate($exempt);
@@ -85,9 +91,10 @@ class Cloner {
 	 * @param  Illuminate\Database\Eloquent\Model $clone
 	 * @return void
 	 */
-	protected function duplicateAttachments($clone) {
+	protected function duplicateAttachments($clone)
+	{
 		if (!$this->attachment || !method_exists($clone, 'getCloneableFileAttributes')) return;
-		foreach($clone->getCloneableFileAttributes() as $attribute) {
+		foreach ($clone->getCloneableFileAttributes() as $attribute) {
 			if (!$original = $clone->getAttribute($attribute)) continue;
 			$clone->setAttribute($attribute, $this->attachment->duplicate($original));
 		}
@@ -103,14 +110,15 @@ class Cloner {
 	 * @param  boolean $child
 	 * @return void
 	 */
-	protected function saveClone($clone, $relation = null, $src, $child = null) {
+	protected function saveClone($clone, $relation = null, $src, $child = null)
+	{
 
 		// Set the child flag
 		if ($relation) $child = true;
 
 		// Notify listeners via callback or event
 		if (method_exists($clone, 'onCloning')) $clone->onCloning($src, $child);
-		$this->events->dispatch('cloner::cloning: '.get_class($src), [$clone, $src]);
+		$this->events->dispatch('cloner::cloning: ' . get_class($src), [$clone, $src]);
 
 		// Do the save
 		if ($relation) $relation->save($clone);
@@ -118,7 +126,7 @@ class Cloner {
 
 		// Notify listeners via callback or event
 		if (method_exists($clone, 'onCloned')) $clone->onCloned($src);
-		$this->events->dispatch('cloner::cloned: '.get_class($src), [$clone, $src]);
+		$this->events->dispatch('cloner::cloned: ' . get_class($src), [$clone, $src]);
 	}
 
 	/**
@@ -128,9 +136,10 @@ class Cloner {
 	 * @param  Illuminate\Database\Eloquent\Model $clone
 	 * @return void
 	 */
-	protected function cloneRelations($model, $clone) {
+	protected function cloneRelations($model, $clone)
+	{
 		if (!method_exists($model, 'getCloneableRelations')) return;
-		foreach($model->getCloneableRelations() as $relation_name) {
+		foreach ($model->getCloneableRelations() as $relation_name) {
 			$this->duplicateRelation($model, $relation_name, $clone);
 		}
 	}
@@ -143,7 +152,8 @@ class Cloner {
 	 * @param  Illuminate\Database\Eloquent\Model $clone
 	 * @return void
 	 */
-	protected function duplicateRelation($model, $relation_name, $clone) {
+	protected function duplicateRelation($model, $relation_name, $clone)
+	{
 		$relation = call_user_func([$model, $relation_name]);
 		if (is_a($relation, 'Illuminate\Database\Eloquent\Relations\BelongsToMany')) {
 			$this->duplicatePivotedRelation($relation, $relation_name, $clone);
@@ -159,7 +169,8 @@ class Cloner {
 	 * @param  Illuminate\Database\Eloquent\Model $clone
 	 * @return void
 	 */
-	protected function duplicatePivotedRelation($relation, $relation_name, $clone) {
+	protected function duplicatePivotedRelation($relation, $relation_name, $clone)
+	{
 
 		// If duplicating between databases, do not duplicate relations. The related
 		// instance may not exist in the other database or could have a different
@@ -187,8 +198,9 @@ class Cloner {
 	 * @param  Illuminate\Database\Eloquent\Model $clone
 	 * @return void
 	 */
-	protected function duplicateDirectRelation($relation, $relation_name, $clone) {
-		$relation->get()->each(function($foreign) use ($clone, $relation_name) {
+	protected function duplicateDirectRelation($relation, $relation_name, $clone)
+	{
+		$relation->get()->each(function ($foreign) use ($clone, $relation_name) {
 			$this->duplicate($foreign, $clone->$relation_name());
 		});
 	}
