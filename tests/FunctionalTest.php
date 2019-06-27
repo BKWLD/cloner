@@ -50,6 +50,9 @@ class FunctionalTest extends PHPUnit_Framework_TestCase
 		);
 	}
 
+	/**
+	 * @return mixed
+	 */
 	protected function mockEvents()
 	{
 		return m::mock('Illuminate\Contracts\Events\Dispatcher', ['dispatch' => null]);
