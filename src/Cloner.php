@@ -168,7 +168,7 @@ class Cloner {
 
 		// Loop trough current relations and attach to clone
 		$relation->get()->each(function ($foreign) use ($clone, $relation_name) {
-			$pivot_attributes = array_except($foreign->pivot->getAttributes(), [
+			$pivot_attributes = Arr::except($foreign->pivot->getAttributes(), [
 				$foreign->pivot->getRelatedKey(),
 				$foreign->pivot->getForeignKey(),
 				$foreign->pivot->getCreatedAtColumn(),
