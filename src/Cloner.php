@@ -2,6 +2,7 @@
 
 // Deps
 use Illuminate\Events\Dispatcher as Events;
+use Illuminate\Support\Arr;
 
 /**
  * Core class that traverses a model's relationships and replicates model
