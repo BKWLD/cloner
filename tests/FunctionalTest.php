@@ -18,12 +18,13 @@ use Mockery as m;
 use VirtualFileSystem\FileSystem as Vfs;
 use PHPUnit\Framework\TestCase;
 
-
-class FunctionalTest extends TestCase {
+class FunctionalTest extends TestCase 
+{
 
 	private $article;
 
-    protected function initUpchuck() {
+	protected function initUpchuck()
+	{
 
 		// Setup filesystem
 		$fs = new Vfs;
@@ -50,22 +51,27 @@ class FunctionalTest extends TestCase {
 		);
 	}
 
-	protected function mockEvents() {
-		return m::mock('Illuminate\Events\Dispatcher', [ 'dispatch' => null ]);
+	/**
+	 * @return mixed
+	 */
+	protected function mockEvents()
+	{
+		return m::mock('Illuminate\Contracts\Events\Dispatcher', ['dispatch' => null]);
 	}
 
 	// https://github.com/laracasts/TestDummy/blob/master/tests/FactoryTest.php#L18
-	protected function setUpDatabase() {
+	protected function setUpDatabase()
+	{
 		$db = new DB;
 
 		$db->addConnection([
-				'driver' => 'sqlite',
-				'database' => ':memory:'
+			'driver' => 'sqlite',
+			'database' => ':memory:'
 		], 'default');
 
 		$db->addConnection([
-				'driver' => 'sqlite',
-				'database' => ':memory:'
+			'driver' => 'sqlite',
+			'database' => ':memory:'
 		], 'alt');
 
 		$db->bootEloquent();
@@ -73,7 +79,8 @@ class FunctionalTest extends TestCase {
 	}
 
 	// https://github.com/laracasts/TestDummy/blob/master/tests/FactoryTest.php#L31
-	protected function migrateTables($connection = 'default') {
+	protected function migrateTables($connection = 'default')
+	{
 		DB::connection($connection)->getSchemaBuilder()->create('articles', function (Blueprint $table) {
 			$table->bigIncrements('id');
 			$table->string('title');
@@ -115,7 +122,8 @@ class FunctionalTest extends TestCase {
 		});
 	}
 
-	protected function seed() {
+	protected function seed()
+	{
 		Article::unguard();
 		$this->article = Article::create([
 			'title' => 'Test',
@@ -143,7 +151,8 @@ class FunctionalTest extends TestCase {
 	}
 
 	// Test that a record is created in the same database
-	function testExists() {
+	function testExists()
+	{
 		$this->initUpchuck();
 		$this->setUpDatabase();
 		$this->migrateTables();
@@ -207,7 +216,8 @@ class FunctionalTest extends TestCase {
 	// use eloquent because Laravel has issues with relationships on models in
 	// a different connection
 	// https://github.com/laravel/framework/issues/9355
-	function testExistsInAltDatabaseAndFilesystem() {
+	function testExistsInAltDatabaseAndFilesystem()
+	{
 		$this->initUpchuck();
 		$this->setUpDatabase();
 		$this->migrateTables();
@@ -229,7 +239,7 @@ class FunctionalTest extends TestCase {
 		// Test that the new article was created
 		$this->assertEquals(1, DB::connection('alt')->table('articles')->count());
 		$clone = DB::connection('alt')->table('articles')->first();
-		$this->assertEquals(1 , $clone->id);
+		$this->assertEquals(1, $clone->id);
 		$this->assertEquals('Test', $clone->title);
 
 		// Test that many to many failed
