@@ -3,11 +3,12 @@
 // Deps
 use Bkwld\Cloner\Stubs\Article;
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Test the trait
  */
-class CloneableTest extends PHPUnit_Framework_TestCase {
+class CloneableTest extends TestCase {
 
 	public function testDuplicate() {
 

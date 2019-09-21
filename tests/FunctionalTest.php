@@ -16,8 +16,9 @@ use League\Flysystem\Vfs\VfsAdapter as Adapter;
 use League\Flysystem\MountManager;
 use Mockery as m;
 use VirtualFileSystem\FileSystem as Vfs;
+use PHPUnit\Framework\TestCase;
 
-class FunctionalTest extends PHPUnit_Framework_TestCase
+class FunctionalTest extends TestCase 
 {
 
 	private $article;
@@ -81,26 +82,26 @@ class FunctionalTest extends PHPUnit_Framework_TestCase
 	protected function migrateTables($connection = 'default')
 	{
 		DB::connection($connection)->getSchemaBuilder()->create('articles', function (Blueprint $table) {
-			$table->increments('id');
+			$table->bigIncrements('id');
 			$table->string('title');
 			$table->timestamps();
 		});
 
 		DB::connection($connection)->getSchemaBuilder()->create('authors', function (Blueprint $table) {
-			$table->increments('id');
+			$table->bigIncrements('id');
 			$table->string('name');
 			$table->timestamps();
 		});
 
 		DB::connection($connection)->getSchemaBuilder()->create('article_author', function (Blueprint $table) {
-			$table->increments('id');
-			$table->integer('article_id')->unsigned();
-			$table->integer('author_id')->unsigned();
+			$table->bigIncrements('id');
+			$table->bigInteger('article_id')->unsigned();
+			$table->bigInteger('author_id')->unsigned();
 		});
 
 		DB::connection($connection)->getSchemaBuilder()->create('photos', function (Blueprint $table) {
-			$table->increments('id');
-			$table->integer('article_id')->unsigned();
+			$table->bigIncrements('id');
+			$table->bigInteger('article_id')->unsigned();
 			$table->string('uid');
 			$table->string('image');
 			$table->boolean('source')->nullable();
@@ -108,15 +109,15 @@ class FunctionalTest extends PHPUnit_Framework_TestCase
 		});
 
 		DB::connection($connection)->getSchemaBuilder()->create('users', function (Blueprint $table) {
-			$table->increments('id');
+			$table->bigIncrements('id');
 			$table->string('name');
 			$table->timestamps();
 		});
 
 		DB::connection($connection)->getSchemaBuilder()->create('article_user', function (Blueprint $table) {
-			$table->integer('rating')->unsigned();
-			$table->integer('user_id')->unsigned();
-			$table->integer('article_id')->unsigned();
+			$table->bigInteger('rating')->unsigned();
+			$table->bigInteger('user_id')->unsigned();
+			$table->bigInteger('article_id')->unsigned();
 			$table->timestamps();
 		});
 	}
