@@ -3,10 +3,13 @@
 // Deps
 use Bkwld\Cloner\ServiceProvider;
 use Mockery as m;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 
 
 class ServiceProviderTest extends TestCase {
+
+    use MockeryPHPUnitIntegration;
 
 	function testProvides() {
 		$app = m::mock('Illuminate\Foundation\Application');

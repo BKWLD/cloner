@@ -3,6 +3,7 @@
 // Deps
 use Bkwld\Cloner\Stubs\Article;
 use Mockery as m;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -10,6 +11,8 @@ use PHPUnit\Framework\TestCase;
  */
 class CloneableTest extends TestCase {
 
+    use MockeryPHPUnitIntegration;
+    
 	public function testDuplicate() {
 
 		m::mock('alias:App', [
