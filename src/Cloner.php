@@ -45,7 +45,7 @@ class Cloner {
 	 */
 	public function duplicate($model, $relation = null) {
 		$clone = $this->cloneModel($model);
-		$this->duplicateAttachments($clone);
+		$this->duplicateAttachments($model, $clone);
 		$this->saveClone($clone, $relation, $model);
 		$this->cloneRelations($model, $clone);
 		return $clone;
@@ -83,13 +83,14 @@ class Cloner {
 	 * Duplicate all attachments, given them a new name, and update the attribute
 	 * value
 	 *
+     * @param  Illuminate\Database\Eloquent\Model $model
 	 * @param  Illuminate\Database\Eloquent\Model $clone
 	 * @return void
 	 */
-	protected function duplicateAttachments($clone) {
+	protected function duplicateAttachments($model, $clone) {
 		if (!$this->attachment || !method_exists($clone, 'getCloneableFileAttributes')) return;
 		foreach($clone->getCloneableFileAttributes() as $attribute) {
-			if (!$original = $clone->getAttribute($attribute)) continue;
+			if (!$original = $model->getAttribute($attribute)) continue;
 			$clone->setAttribute($attribute, $this->attachment->duplicate($original));
 		}
 	}
