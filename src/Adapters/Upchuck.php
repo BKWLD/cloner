@@ -47,9 +47,10 @@ class Upchuck implements AttachmentAdapter {
 	 * Duplicate a file given it's URL
 	 *
 	 * @param  string $url
+	 * @param  Illuminate\Database\Eloquent\Model $clone
 	 * @return string
 	 */
-	public function duplicate($url) {
+	public function duplicate($url, $clone) {
 
 		// Make the destination path
 		$current_path = $this->helpers->path($url);
