@@ -45,8 +45,8 @@ class Cloner {
 	 */
 	public function duplicate($model, $relation = null) {
 		$clone = $this->cloneModel($model);
-		$this->duplicateAttachments($model, $clone);
-		$this->saveClone($clone, $relation, $model);
+        $this->saveClone($clone, $relation, $model);
+        $this->duplicateAttachments($model, $clone);
 		$this->cloneRelations($model, $clone);
 		return $clone;
 	}
@@ -91,7 +91,7 @@ class Cloner {
 		if (!$this->attachment || !method_exists($clone, 'getCloneableFileAttributes')) return;
 		foreach($clone->getCloneableFileAttributes() as $attribute) {
 			if (!$original = $model->getAttribute($attribute)) continue;
-			$clone->setAttribute($attribute, $this->attachment->duplicate($original));
+			$clone->setAttribute($attribute, $this->attachment->duplicate($original, $clone));
 		}
 	}
 
