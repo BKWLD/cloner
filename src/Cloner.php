@@ -45,9 +45,22 @@ class Cloner {
 	 */
 	public function duplicate($model, $relation = null) {
 		$clone = $this->cloneModel($model);
-        $this->saveClone($clone, $relation, $model);
-        $this->duplicateAttachments($model, $clone);
+
+		$this->dispatchOnCloningEvent($clone, $relation, $model);
+
+		if ($relation) {
+			$relation->save($clone);
+		} else {
+			$clone->save();
+		}
+
+		$this->duplicateAttachments($model, $clone);
+		$clone->save();
+
+		$this->dispatchOnClonedEvent($clone, $model);
+
 		$this->cloneRelations($model, $clone);
+
 		return $clone;
 	}
 
@@ -96,28 +109,29 @@ class Cloner {
 	}
 
 	/**
-	 * Save the clone. If a relation was passed, save the clone onto that
-	 * relation.  Otherwise, just save it.
-	 *
 	 * @param  Illuminate\Database\Eloquent\Model $clone
 	 * @param  Illuminate\Database\Eloquent\Relations\Relation $relation
 	 * @param  Illuminate\Database\Eloquent\Model $src The orginal model
 	 * @param  boolean $child
 	 * @return void
 	 */
-	protected function saveClone($clone, $relation = null, $src, $child = null) {
-
+	protected function dispatchOnCloningEvent($clone, $relation = null, $src, $child = null)
+	{
 		// Set the child flag
 		if ($relation) $child = true;
 
 		// Notify listeners via callback or event
 		if (method_exists($clone, 'onCloning')) $clone->onCloning($src, $child);
 		$this->events->dispatch('cloner::cloning: '.get_class($src), [$clone, $src]);
+	}
 
-		// Do the save
-		if ($relation) $relation->save($clone);
-		else $clone->save();
-
+    /**
+	 * @param  Illuminate\Database\Eloquent\Model $clone
+	 * @param  Illuminate\Database\Eloquent\Model $src The orginal model
+	 * @return void
+	 */
+	protected function dispatchOnClonedEvent($clone, $src)
+	{
 		// Notify listeners via callback or event
 		if (method_exists($clone, 'onCloned')) $clone->onCloned($src);
 		$this->events->dispatch('cloner::cloned: '.get_class($src), [$clone, $src]);
