@@ -57,10 +57,10 @@ class Cloner {
 		$this->duplicateAttachments($model, $clone);
 		$clone->save();
 
-		$this->dispatchOnClonedEvent($clone, $model);
-
 		$this->cloneRelations($model, $clone);
-
+		
+		$this->dispatchOnClonedEvent($clone, $model);
+		
 		return $clone;
 	}
 
