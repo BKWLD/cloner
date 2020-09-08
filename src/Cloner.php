@@ -1,7 +1,7 @@
 <?php namespace Bkwld\Cloner;
 
 // Deps
-use Illuminate\Events\Dispatcher as Events;
+use Illuminate\Contracts\Events\Dispatcher as Events;
 use Illuminate\Support\Arr;
 
 /**
