@@ -190,6 +190,11 @@ class Cloner {
 				$foreign->pivot->getCreatedAtColumn(),
 				$foreign->pivot->getUpdatedAtColumn()
 			]);
+
+	        if ($foreign->pivot->incrementing) {
+				unset($pivot_attributes[$foreign->pivot->getKeyName()]);
+	        }
+
 			$clone->$relation_name()->attach($foreign, $pivot_attributes);
 		});
 	}
