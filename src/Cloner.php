@@ -115,7 +115,7 @@ class Cloner {
 	 * @param  boolean $child
 	 * @return void
 	 */
-	protected function dispatchOnCloningEvent($clone, $relation = null, $src, $child = null)
+	protected function dispatchOnCloningEvent($clone, $relation = null, $src = null, $child = null)
 	{
 		// Set the child flag
 		if ($relation) $child = true;
