@@ -19,7 +19,7 @@ use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use VirtualFileSystem\FileSystem as Vfs;
 use PHPUnit\Framework\TestCase;
 
-class FunctionalTest extends TestCase 
+class FunctionalTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
 
@@ -58,7 +58,7 @@ class FunctionalTest extends TestCase
 	 */
 	protected function mockEvents()
 	{
-		return m::mock('Illuminate\Events\Dispatcher', ['dispatch' => null]);
+		return m::mock('Illuminate\Contracts\Events\Dispatcher', ['dispatch' => null]);
 	}
 
 	// https://github.com/laracasts/TestDummy/blob/master/tests/FactoryTest.php#L18
