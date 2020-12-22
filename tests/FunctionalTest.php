@@ -5,6 +5,7 @@ use Bkwld\Cloner\Cloner;
 use Bkwld\Cloner\Adapters\Upchuck;
 use Bkwld\Cloner\Stubs\Article;
 use Bkwld\Cloner\Stubs\Author;
+use Bkwld\Cloner\Stubs\Image;
 use Bkwld\Cloner\Stubs\Photo;
 use Bkwld\Cloner\Stubs\User;
 use Bkwld\Upchuck\Helpers;
@@ -212,7 +213,13 @@ class FunctionalTest extends TestCase
 		$path = $this->helpers->path($photo->image);
 		$this->assertTrue($this->disk->has($path));
 		$this->assertEquals('contents', $this->disk->read($path));
-	}
+
+		// Test one to many inverse (BelongsTo)
+        $image = Image::first();
+        $clone = $cloner->duplicate($image);
+        $this->assertNotNull($clone->article);
+        $this->assertNotEquals($this->article->id, $clone->article->id);
+    }
 
 	// Test that model is created in a differetnt database.  These checks don't
 	// use eloquent because Laravel has issues with relationships on models in

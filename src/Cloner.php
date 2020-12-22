@@ -49,7 +49,9 @@ class Cloner {
 		$this->dispatchOnCloningEvent($clone, $relation, $model);
 
 		if ($relation) {
-			$relation->save($clone);
+            if (!is_a($relation, 'Illuminate\Database\Eloquent\Relations\BelongsTo')) {
+                $relation->save($clone);
+            }
 		} else {
 			$clone->save();
 		}
@@ -210,7 +212,11 @@ class Cloner {
 	 */
 	protected function duplicateDirectRelation($relation, $relation_name, $clone) {
 		$relation->get()->each(function($foreign) use ($clone, $relation_name) {
-			$this->duplicate($foreign, $clone->$relation_name());
-		});
+			$cloned_relation = $this->duplicate($foreign, $clone->$relation_name());
+            if (is_a($clone->$relation_name(), 'Illuminate\Database\Eloquent\Relations\BelongsTo')) {
+                $clone->$relation_name()->associate($cloned_relation);
+                $clone->save();
+            }
+        });
 	}
 }
