@@ -13,22 +13,22 @@ use League\Flysystem\MountManager;
 class Upchuck implements AttachmentAdapter {
 
 	/**
-	 * @var Bkwld\Upchuck\Helpers
+	 * @var \Bkwld\Upchuck\Helpers
 	 */
 	private $helpers;
 
 	/**
-	 * @var Bkwld\Upchuck\Storage
+	 * @var \Bkwld\Upchuck\Storage
 	 */
 	private $storage;
 
 	/**
-	 * @var League\Flysystem\Filesystem
+	 * @var \League\Flysystem\Filesystem
 	 */
 	private $disk;
 
 	/**
-	 * @var League\Flysystem\MountManager
+	 * @var \League\Flysystem\MountManager
 	 */
 	private $disks;
 
@@ -47,7 +47,7 @@ class Upchuck implements AttachmentAdapter {
 	 * Duplicate a file given it's URL
 	 *
 	 * @param  string $url
-	 * @param  Illuminate\Database\Eloquent\Model $clone
+	 * @param  \Illuminate\Database\Eloquent\Model $clone
 	 * @return string
 	 */
 	public function duplicate($url, $clone) {
@@ -70,7 +70,7 @@ class Upchuck implements AttachmentAdapter {
 	 * Set a different destination for cloned items.  In doing so, create a
 	 * MountManager instance that will be used to do the copying
 	 *
-	 * @param  League\Flysystem\Filesystem $dst
+	 * @param  \League\Flysystem\Filesystem $dst
 	 */
 	public function setDestination(Filesystem $dst) {
 		$this->disks = new MountManager([

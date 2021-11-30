@@ -71,7 +71,7 @@ trait Cloneable {
 	/**
 	 * Clone the current model instance
 	 *
-	 * @return Illuminate\Database\Eloquent\Model The new, saved clone
+	 * @return \Illuminate\Database\Eloquent\Model The new, saved clone
 	 */
 	public function duplicate() {
 		return App::make('cloner')->duplicate($this);
@@ -81,7 +81,7 @@ trait Cloneable {
 	 * Clone the current model instance to a specific Laravel database connection
 	 *
 	 * @param  string $connection A Laravel database connection
-	 * @return Illuminate\Database\Eloquent\Model The new, saved clone
+	 * @return \Illuminate\Database\Eloquent\Model The new, saved clone
 	 */
 	public function duplicateTo($connection) {
 		return App::make('cloner')->duplicateTo($this, $connection);
@@ -91,7 +91,7 @@ trait Cloneable {
 	 * A no-op callback that gets fired when a model is cloning but before it gets
 	 * committed to the database
 	 *
-	 * @param  Illuminate\Database\Eloquent\Model $src
+	 * @param  \Illuminate\Database\Eloquent\Model $src
 	 * @param  boolean $child
 	 * @return void
 	 */
@@ -101,7 +101,7 @@ trait Cloneable {
 	 * A no-op callback that gets fired when a model is cloned and saved to the
 	 * database
 	 *
-	 * @param  Illuminate\Database\Eloquent\Model $src
+	 * @param  \Illuminate\Database\Eloquent\Model $src
 	 * @return void
 	 */
 	public function onCloned($src) {}
