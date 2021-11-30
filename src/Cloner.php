@@ -39,9 +39,9 @@ class Cloner {
 	/**
 	 * Clone a model instance and all of it's files and relations
 	 *
-	 * @param  Illuminate\Database\Eloquent\Model $model
-	 * @param  Illuminate\Database\Eloquent\Relations\Relation $relation
-	 * @return Illuminate\Database\Eloquent\Model The new model instance
+	 * @param  \Illuminate\Database\Eloquent\Model $model
+	 * @param  \Illuminate\Database\Eloquent\Relations\Relation $relation
+	 * @return \Illuminate\Database\Eloquent\Model The new model instance
 	 */
 	public function duplicate($model, $relation = null) {
 		$clone = $this->cloneModel($model);
@@ -69,9 +69,9 @@ class Cloner {
 	/**
 	 * Clone a model instance to a specific database connection
 	 *
-	 * @param  Illuminate\Database\Eloquent\Model $model
+	 * @param  \Illuminate\Database\Eloquent\Model $model
 	 * @param  string $connection A Laravel database connection
-	 * @return Illuminate\Database\Eloquent\Model The new model instance
+	 * @return \Illuminate\Database\Eloquent\Model The new model instance
 	 */
 	public function duplicateTo($model, $connection) {
 		$this->write_connection = $connection; // Store the write database connection
@@ -83,8 +83,8 @@ class Cloner {
 	/**
 	 * Create duplicate of the model
 	 *
-	 * @param  Illuminate\Database\Eloquent\Model $model
-	 * @return Illuminate\Database\Eloquent\Model The new model instance
+	 * @param  \Illuminate\Database\Eloquent\Model $model
+	 * @return \Illuminate\Database\Eloquent\Model The new model instance
 	 */
 	protected function cloneModel($model) {
 		$exempt = method_exists($model, 'getCloneExemptAttributes') ?
@@ -98,8 +98,8 @@ class Cloner {
 	 * Duplicate all attachments, given them a new name, and update the attribute
 	 * value
 	 *
-     * @param  Illuminate\Database\Eloquent\Model $model
-	 * @param  Illuminate\Database\Eloquent\Model $clone
+     * @param  \Illuminate\Database\Eloquent\Model $model
+	 * @param  \Illuminate\Database\Eloquent\Model $clone
 	 * @return void
 	 */
 	protected function duplicateAttachments($model, $clone) {
@@ -111,9 +111,9 @@ class Cloner {
 	}
 
 	/**
-	 * @param  Illuminate\Database\Eloquent\Model $clone
-	 * @param  Illuminate\Database\Eloquent\Relations\Relation $relation
-	 * @param  Illuminate\Database\Eloquent\Model $src The orginal model
+	 * @param  \Illuminate\Database\Eloquent\Model $clone
+	 * @param  \Illuminate\Database\Eloquent\Relations\Relation $relation
+	 * @param  \Illuminate\Database\Eloquent\Model $src The orginal model
 	 * @param  boolean $child
 	 * @return void
 	 */
@@ -128,8 +128,8 @@ class Cloner {
 	}
 
     /**
-	 * @param  Illuminate\Database\Eloquent\Model $clone
-	 * @param  Illuminate\Database\Eloquent\Model $src The orginal model
+	 * @param  \Illuminate\Database\Eloquent\Model $clone
+	 * @param  \Illuminate\Database\Eloquent\Model $src The orginal model
 	 * @return void
 	 */
 	protected function dispatchOnClonedEvent($clone, $src)
@@ -142,8 +142,8 @@ class Cloner {
 	/**
 	 * Loop through relations and clone or re-attach them
 	 *
-	 * @param  Illuminate\Database\Eloquent\Model $model
-	 * @param  Illuminate\Database\Eloquent\Model $clone
+	 * @param  \Illuminate\Database\Eloquent\Model $model
+	 * @param  \Illuminate\Database\Eloquent\Model $clone
 	 * @return void
 	 */
 	protected function cloneRelations($model, $clone) {
@@ -156,9 +156,9 @@ class Cloner {
 	/**
 	 * Duplicate relationships to the clone
 	 *
-	 * @param  Illuminate\Database\Eloquent\Model $model
+	 * @param  \Illuminate\Database\Eloquent\Model $model
 	 * @param  string $relation_name
-	 * @param  Illuminate\Database\Eloquent\Model $clone
+	 * @param  \Illuminate\Database\Eloquent\Model $clone
 	 * @return void
 	 */
 	protected function duplicateRelation($model, $relation_name, $clone) {
@@ -172,9 +172,9 @@ class Cloner {
 	 * Duplicate a many-to-many style relation where we are just attaching the
 	 * relation to the dupe
 	 *
-	 * @param  Illuminate\Database\Eloquent\Relations\Relation $relation
+	 * @param  \Illuminate\Database\Eloquent\Relations\Relation $relation
 	 * @param  string $relation_name
-	 * @param  Illuminate\Database\Eloquent\Model $clone
+	 * @param  \Illuminate\Database\Eloquent\Model $clone
 	 * @return void
 	 */
 	protected function duplicatePivotedRelation($relation, $relation_name, $clone) {
@@ -205,9 +205,9 @@ class Cloner {
 	 * Duplicate a one-to-many style relation where the foreign model is ALSO
 	 * cloned and then associated
 	 *
-	 * @param  Illuminate\Database\Eloquent\Relations\Relation $relation
+	 * @param  \Illuminate\Database\Eloquent\Relations\Relation $relation
 	 * @param  string $relation_name
-	 * @param  Illuminate\Database\Eloquent\Model $clone
+	 * @param  \Illuminate\Database\Eloquent\Model $clone
 	 * @return void
 	 */
 	protected function duplicateDirectRelation($relation, $relation_name, $clone) {
