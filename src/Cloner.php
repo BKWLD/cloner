@@ -49,9 +49,9 @@ class Cloner {
 		$this->dispatchOnCloningEvent($clone, $relation, $model);
 
 		if ($relation) {
-            if (!is_a($relation, 'Illuminate\Database\Eloquent\Relations\BelongsTo')) {
-                $relation->save($clone);
-            }
+			if (!is_a($relation, 'Illuminate\Database\Eloquent\Relations\BelongsTo')) {
+				$relation->save($clone);
+			}
 		} else {
 			$clone->save();
 		}
@@ -98,7 +98,7 @@ class Cloner {
 	 * Duplicate all attachments, given them a new name, and update the attribute
 	 * value
 	 *
-     * @param  \Illuminate\Database\Eloquent\Model $model
+		 * @param  \Illuminate\Database\Eloquent\Model $model
 	 * @param  \Illuminate\Database\Eloquent\Model $clone
 	 * @return void
 	 */
@@ -127,7 +127,7 @@ class Cloner {
 		$this->events->dispatch('cloner::cloning: '.get_class($src), [$clone, $src]);
 	}
 
-    /**
+		/**
 	 * @param  \Illuminate\Database\Eloquent\Model $clone
 	 * @param  \Illuminate\Database\Eloquent\Model $src The orginal model
 	 * @return void
@@ -192,12 +192,14 @@ class Cloner {
 				$foreign->pivot->getCreatedAtColumn(),
 				$foreign->pivot->getUpdatedAtColumn()
 			]);
-		foreach (array_keys($pivot_attributes) as $attributeKey) {
-                	$pivot_attributes[$attributeKey] = $foreign->pivot->getAttribute($attributeKey);
-            	}
-	        if ($foreign->pivot->incrementing) {
+			
+			foreach (array_keys($pivot_attributes) as $attributeKey) {
+				$pivot_attributes[$attributeKey] = $foreign->pivot->getAttribute($attributeKey);
+			}
+			
+			if ($foreign->pivot->incrementing) {
 				unset($pivot_attributes[$foreign->pivot->getKeyName()]);
-	        }
+			}
 
 			$clone->$relation_name()->attach($foreign, $pivot_attributes);
 		});
@@ -215,10 +217,10 @@ class Cloner {
 	protected function duplicateDirectRelation($relation, $relation_name, $clone) {
 		$relation->get()->each(function($foreign) use ($clone, $relation_name) {
 			$cloned_relation = $this->duplicate($foreign, $clone->$relation_name());
-            if (is_a($clone->$relation_name(), 'Illuminate\Database\Eloquent\Relations\BelongsTo')) {
-                $clone->$relation_name()->associate($cloned_relation);
-                $clone->save();
-            }
-        });
+			if (is_a($clone->$relation_name(), 'Illuminate\Database\Eloquent\Relations\BelongsTo')) {
+				$clone->$relation_name()->associate($cloned_relation);
+				$clone->save();
+			}
+		});
 	}
 }
