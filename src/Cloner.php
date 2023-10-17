@@ -192,7 +192,9 @@ class Cloner {
 				$foreign->pivot->getCreatedAtColumn(),
 				$foreign->pivot->getUpdatedAtColumn()
 			]);
-
+		foreach (array_keys($pivot_attributes) as $attributeKey) {
+                	$pivot_attributes[$attributeKey] = $foreign->pivot->getAttribute($attributeKey);
+            	}
 	        if ($foreign->pivot->incrementing) {
 				unset($pivot_attributes[$foreign->pivot->getKeyName()]);
 	        }
