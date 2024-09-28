@@ -70,21 +70,22 @@ trait Cloneable {
 
 	/**
 	 * Clone the current model instance
-	 *
+	 * @param  array $attr Extra attributes for each clone
 	 * @return \Illuminate\Database\Eloquent\Model The new, saved clone
 	 */
-	public function duplicate() {
-		return App::make('cloner')->duplicate($this);
+	public function duplicate($attr = null) {
+		return App::make('cloner')->duplicate($this, null, $attr);
 	}
 
 	/**
 	 * Clone the current model instance to a specific Laravel database connection
 	 *
 	 * @param  string $connection A Laravel database connection
+     * @param  array $attr Extra attributes for each clone
 	 * @return \Illuminate\Database\Eloquent\Model The new, saved clone
 	 */
-	public function duplicateTo($connection) {
-		return App::make('cloner')->duplicateTo($this, $connection);
+	public function duplicateTo($connection, $attr) {
+		return App::make('cloner')->duplicateTo($this, $connection, $attr);
 	}
 
 	/**
@@ -93,9 +94,10 @@ trait Cloneable {
 	 *
 	 * @param  \Illuminate\Database\Eloquent\Model $src
 	 * @param  boolean $child
+     * @param  array $attr Extra attributes for each clone
 	 * @return void
 	 */
-	public function onCloning($src, $child = null) {}
+	public function onCloning($src, $child = null, $attr = null) {}
 
 	/**
 	 * A no-op callback that gets fired when a model is cloned and saved to the
