@@ -81,7 +81,7 @@ trait Cloneable {
 	 * Clone the current model instance to a specific Laravel database connection
 	 *
 	 * @param  string $connection A Laravel database connection
-     * @param  array $attr Extra attributes for each clone
+	 * @param  array $attr Extra attributes for each clone
 	 * @return \Illuminate\Database\Eloquent\Model The new, saved clone
 	 */
 	public function duplicateTo($connection, $attr) {

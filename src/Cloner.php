@@ -41,7 +41,7 @@ class Cloner {
 	 *
 	 * @param  \Illuminate\Database\Eloquent\Model $model
 	 * @param  \Illuminate\Database\Eloquent\Relations\Relation $relation
-     * @param  array $attr Extra attributes for each clone
+	 * @param  array $attr Extra attributes for each clone
 	 * @return \Illuminate\Database\Eloquent\Model The new model instance
 	 */
 	public function duplicate($model, $relation = null, $attr = null) {
@@ -61,9 +61,9 @@ class Cloner {
 		$clone->save();
 
 		$this->cloneRelations($model, $clone);
-		
+
 		$this->dispatchOnClonedEvent($clone, $model);
-		
+
 		return $clone;
 	}
 
@@ -72,7 +72,7 @@ class Cloner {
 	 *
 	 * @param  \Illuminate\Database\Eloquent\Model $model
 	 * @param  string $connection A Laravel database connection
-     * @param  array $attr Extra attributes for each clone
+	 * @param  array $attr Extra attributes for each clone
 	 * @return \Illuminate\Database\Eloquent\Model The new model instance
 	 */
 	public function duplicateTo($model, $connection, $attr) {
@@ -100,7 +100,7 @@ class Cloner {
 	 * Duplicate all attachments, given them a new name, and update the attribute
 	 * value
 	 *
-		 * @param  \Illuminate\Database\Eloquent\Model $model
+     * @param  \Illuminate\Database\Eloquent\Model $model
 	 * @param  \Illuminate\Database\Eloquent\Model $clone
 	 * @return void
 	 */
@@ -116,7 +116,7 @@ class Cloner {
 	 * @param  \Illuminate\Database\Eloquent\Model $clone
 	 * @param  \Illuminate\Database\Eloquent\Relations\Relation $relation
 	 * @param  \Illuminate\Database\Eloquent\Model $src The orginal model
-     * @param  array $attr Extra attributes for each clone
+	 * @param  array $attr Extra attributes for each clone
 	 * @param  boolean $child
 	 * @return void
 	 */
@@ -195,11 +195,11 @@ class Cloner {
 				$foreign->pivot->getCreatedAtColumn(),
 				$foreign->pivot->getUpdatedAtColumn()
 			]);
-			
+
 			foreach (array_keys($pivot_attributes) as $attributeKey) {
 				$pivot_attributes[$attributeKey] = $foreign->pivot->getAttribute($attributeKey);
 			}
-			
+
 			if ($foreign->pivot->incrementing) {
 				unset($pivot_attributes[$foreign->pivot->getKeyName()]);
 			}
