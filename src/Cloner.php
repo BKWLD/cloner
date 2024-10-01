@@ -41,12 +41,13 @@ class Cloner {
 	 *
 	 * @param  \Illuminate\Database\Eloquent\Model $model
 	 * @param  \Illuminate\Database\Eloquent\Relations\Relation $relation
+	 * @param  array $attr Extra attributes for each clone
 	 * @return \Illuminate\Database\Eloquent\Model The new model instance
 	 */
-	public function duplicate($model, $relation = null) {
+	public function duplicate($model, $relation = null, $attr = null) {
 		$clone = $this->cloneModel($model);
 
-		$this->dispatchOnCloningEvent($clone, $relation, $model);
+		$this->dispatchOnCloningEvent($clone, $relation, $model,null, $attr);
 
 		if ($relation) {
 			if (!is_a($relation, 'Illuminate\Database\Eloquent\Relations\BelongsTo')) {
@@ -60,9 +61,9 @@ class Cloner {
 		$clone->save();
 
 		$this->cloneRelations($model, $clone);
-		
+
 		$this->dispatchOnClonedEvent($clone, $model);
-		
+
 		return $clone;
 	}
 
@@ -71,11 +72,12 @@ class Cloner {
 	 *
 	 * @param  \Illuminate\Database\Eloquent\Model $model
 	 * @param  string $connection A Laravel database connection
+	 * @param  array $attr Extra attributes for each clone
 	 * @return \Illuminate\Database\Eloquent\Model The new model instance
 	 */
-	public function duplicateTo($model, $connection) {
+	public function duplicateTo($model, $connection, $attr = null) {
 		$this->write_connection = $connection; // Store the write database connection
-		$clone = $this->duplicate($model); // Do a normal duplicate
+		$clone = $this->duplicate($model, null, $attr); // Do a normal duplicate
 		$this->write_connection = null; // Null out the connection for next run
 		return $clone;
 	}
@@ -98,7 +100,7 @@ class Cloner {
 	 * Duplicate all attachments, given them a new name, and update the attribute
 	 * value
 	 *
-		 * @param  \Illuminate\Database\Eloquent\Model $model
+     * @param  \Illuminate\Database\Eloquent\Model $model
 	 * @param  \Illuminate\Database\Eloquent\Model $clone
 	 * @return void
 	 */
@@ -114,17 +116,18 @@ class Cloner {
 	 * @param  \Illuminate\Database\Eloquent\Model $clone
 	 * @param  \Illuminate\Database\Eloquent\Relations\Relation $relation
 	 * @param  \Illuminate\Database\Eloquent\Model $src The orginal model
+	 * @param  array $attr Extra attributes for each clone
 	 * @param  boolean $child
 	 * @return void
 	 */
-	protected function dispatchOnCloningEvent($clone, $relation = null, $src = null, $child = null)
+	protected function dispatchOnCloningEvent($clone, $relation = null, $src = null, $child = null, $attr = null)
 	{
 		// Set the child flag
 		if ($relation) $child = true;
-
+        if($attr) $attr = json_decode(json_encode($attr), FALSE);
 		// Notify listeners via callback or event
-		if (method_exists($clone, 'onCloning')) $clone->onCloning($src, $child);
-		$this->events->dispatch('cloner::cloning: '.get_class($src), [$clone, $src]);
+		if (method_exists($clone, 'onCloning')) $clone->onCloning($src, $child, $attr);
+		$this->events->dispatch('cloner::cloning: '.get_class($src), [$clone, $src, $attr]);
 	}
 
 		/**
@@ -192,11 +195,11 @@ class Cloner {
 				$foreign->pivot->getCreatedAtColumn(),
 				$foreign->pivot->getUpdatedAtColumn()
 			]);
-			
+
 			foreach (array_keys($pivot_attributes) as $attributeKey) {
 				$pivot_attributes[$attributeKey] = $foreign->pivot->getAttribute($attributeKey);
 			}
-			
+
 			if ($foreign->pivot->incrementing) {
 				unset($pivot_attributes[$foreign->pivot->getKeyName()]);
 			}
