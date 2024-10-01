@@ -75,7 +75,7 @@ class Cloner {
 	 * @param  array $attr Extra attributes for each clone
 	 * @return \Illuminate\Database\Eloquent\Model The new model instance
 	 */
-	public function duplicateTo($model, $connection, $attr) {
+	public function duplicateTo($model, $connection, $attr = null) {
 		$this->write_connection = $connection; // Store the write database connection
 		$clone = $this->duplicate($model, null, $attr); // Do a normal duplicate
 		$this->write_connection = null; // Null out the connection for next run
