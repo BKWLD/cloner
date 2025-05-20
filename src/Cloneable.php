@@ -71,7 +71,7 @@ trait Cloneable {
 	/**
 	 * Clone the current model instance
 	 * @param  array $attr Extra attributes for each clone
-	 * @return self The new, saved clone
+	 * @return static The new, saved clone
 	 */
 	public function duplicate($attr = null) {
 		return App::make('cloner')->duplicate($this, null, $attr);
@@ -82,7 +82,7 @@ trait Cloneable {
 	 *
 	 * @param  string $connection A Laravel database connection
 	 * @param  array $attr Extra attributes for each clone
-	 * @return self The new, saved clone
+	 * @return static The new, saved clone
 	 */
 	public function duplicateTo($connection, $attr = null) {
 		return App::make('cloner')->duplicateTo($this, $connection, $attr);
